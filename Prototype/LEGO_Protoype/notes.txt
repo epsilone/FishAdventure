@@ -1,0 +1,41 @@
+03/09/2012
+FishTank meeting comments
+
+==Music==
+- add music on background
+- 5 sections, sampled/playlist (not for prototype)
+- loop for now
+
+==Update model==
+- bigger fish
+- fix the colors (talk to Daniel)
+- snap stickers to grid
+- pair stickers (eyebrow with eye)
+- make transparent mouth (culling, transparent model, render only background texture)
+
+==Screen system==
+First screen
+- just show world with a circular button in the right bottom corner 
+
+Second screen
+- inspirator
+- create a screen system with possibility to move backward and forward (<| ; |> on the sides of the screen)
+
+Third screen 
+- attach stickers
+- inventory system
+- in the end pop-up icon to click and move on
+
+Forth screen
+- enter PLAY mode
+
+zoom in/out effect (to make it more dynamic … parallax background change)
+tap to move fish to particular point on the screen
+swipe is navigation on the screen / aquarium
+apply cartoon shader (outline)
+add health bar
+
+------------
+12/10/2012
+
+- make house 3 disappear until the end (appears after "scan")

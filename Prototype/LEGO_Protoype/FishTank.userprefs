@@ -1,0 +1,32 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets/Scripts/FishTap.cs">
+    <Files>
+      <File FileName="Assets/Scripts/FishTap.cs" Line="7" Column="2" />
+      <File FileName="Assets/Scripts/WhatIsScreen.cs" Line="9" Column="27" />
+      <File FileName="Assets/Scripts/Utils/Swipe.cs" Line="93" Column="8" />
+      <File FileName="Assets/Scripts/GUI/StickerGUI.cs" Line="202" Column="109" />
+    </Files>
+    <Pads>
+      <Pad Id="ProjectPad">
+        <State expanded="True">
+          <Node name="Assembly-CSharp" expanded="True">
+            <Node name="Assets" expanded="True">
+              <Node name="Scripts" expanded="True">
+                <Node name="Utils" expanded="True" />
+                <Node name="FishTap.cs" selected="True" />
+              </Node>
+            </Node>
+          </Node>
+        </State>
+      </Pad>
+      <Pad Id="ClassPad">
+        <State selected="True" />
+      </Pad>
+    </Pads>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
