@@ -1,6 +1,6 @@
-using Com.Funcom.FishAdventure.Component.Fish.Profile;
+using Com.Funcom.FishAdventure.Component.Entity.Living.Type;
 
-namespace Com.Funcom.FishAdventure.Controller.AI.Behaviour
+namespace Com.Funcom.FishAdventure.Controller.AI.Behaviour.Type
 {
     public class SwimBehaviour:BaseBehaviour
     {
@@ -19,7 +19,7 @@ namespace Com.Funcom.FishAdventure.Controller.AI.Behaviour
             base.Destroy();
         }
 
-        public override void ComputeStatusData(Portfolio portfolio)
+       /* public override void ComputeStatusData(Portfolio portfolio)
         {
             base.ComputeStatusData(portfolio);
             //Set the score in function of the portfolio
@@ -30,7 +30,7 @@ namespace Com.Funcom.FishAdventure.Controller.AI.Behaviour
             base.GetImpact();
             //Return the impact of the behaviour on the personality
             return new Personality();
-        }
+        }*/
 
         public override int GetAnimationTypeId()
         {

@@ -1,4 +1,3 @@
-using Com.Funcom.FishAdventure.Component.Fish.Profile;
 using System;
 
 namespace Com.Funcom.FishAdventure.Controller.AI.Behaviour
@@ -25,7 +24,7 @@ namespace Com.Funcom.FishAdventure.Controller.AI.Behaviour
 
         }
 
-        public virtual void ComputeStatusData(Portfolio portfolio)
+        /*public virtual void ComputeStatusData(Portfolio portfolio)
         {
             //Set the score in function of the portfolio
         }
@@ -34,7 +33,7 @@ namespace Com.Funcom.FishAdventure.Controller.AI.Behaviour
         {
             //Return the impact of the behaviour on the personality
             return new Personality();
-        }
+        }*/
 
         public virtual int GetAnimationTypeId()
         {

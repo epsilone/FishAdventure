@@ -3,6 +3,7 @@ using System.Collections;
 
 public class BlendAnimation : MonoBehaviour {
 	public bool blend;
+    public float weight = 0.8f;
 
 	// Use this for initialization
 	void Start () {
@@ -12,7 +13,7 @@ public class BlendAnimation : MonoBehaviour {
 	// Update is called once per frame
 	void Update () {
 		if(blend){
-			animation.Blend("swim", 0.8f);
+            animation.Blend("swim", weight);
 		}
 	}
 }

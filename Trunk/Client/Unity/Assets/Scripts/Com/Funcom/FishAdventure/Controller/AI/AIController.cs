@@ -1,7 +1,6 @@
-using Com.Funcom.FishAdventure.Component.Fish.Profile;
+using System.Collections.Generic;
 using Com.Funcom.FishAdventure.Controller.AI.Behaviour;
 using UnityEngine;
-using System.Collections.Generic;
 
 namespace Com.Funcom.FishAdventure.Controller.AI
 {
@@ -11,7 +10,7 @@ namespace Com.Funcom.FishAdventure.Controller.AI
         private int suitableBehaviourCount = 3;
         private float cycleDelay = 1; //sec
 
-        private Portfolio targetPortfolio;
+        //private Portfolio targetPortfolio;
         
 
         private List<IBehaviour> behaviourList;
@@ -35,7 +34,6 @@ namespace Com.Funcom.FishAdventure.Controller.AI
         private void Init()
         {
             behaviourList = new List<IBehaviour>();
-            behaviourList.Add(new SwimBehaviour());//TODO (kaiv): remove this
         }
 
         public void Destroy()
@@ -43,10 +41,32 @@ namespace Com.Funcom.FishAdventure.Controller.AI
 
         }
 
+        public void registerBehaviourByList(List<IBehaviour> behaviourList)
+        {
+            foreach (IBehaviour behaviourBuffer in behaviourList)
+            {
+                registerBehaviour(behaviourBuffer);
+            }
+        }
+
+        public void registerBehaviour(IBehaviour behaviour)
+        {
+            foreach (IBehaviour behaviourBuffer in behaviourList)
+            {
+                if (behaviourBuffer.GetType() == behaviour.GetType())
+                {
+                    Debug.Log("AIController.cs - registerBehaviour() - Behaviour " + behaviour + " is already registered.");
+                    return;
+                }
+            }
+
+            behaviourList.Add(behaviour);
+        }
+
         public void Update()
         {
-            if (targetPortfolio != null)
-            {
+            //if (targetPortfolio != null)
+            //{
                 delay += Time.deltaTime;
                 if (delay >= cycleDelay)
                 {
@@ -54,7 +74,7 @@ namespace Com.Funcom.FishAdventure.Controller.AI
                     ComputeBehaviour();
                     AnalyzeBehaviour();
                 }
-            }
+            //}
         }
 
         private void AnalyzeBehaviour()
@@ -62,10 +82,10 @@ namespace Com.Funcom.FishAdventure.Controller.AI
             List<IBehaviour> suitableBehaviourList = new List<IBehaviour>();
             behaviourList.Sort();
 
-            for (int i = behaviourList.Count - 1; ;i--)
+            /*for (int i = behaviourList.Count - 1; ;i--)
             {
 
-            }
+            }*/
 
 
             Debug.Log("AnalyzeBehaviour: " + behaviourList[behaviourList.Count - 1]);
@@ -75,7 +95,7 @@ namespace Com.Funcom.FishAdventure.Controller.AI
         {
             foreach (IBehaviour behaviour in behaviourList)
             {
-                behaviour.ComputeStatusData(targetPortfolio);
+                //behaviour.ComputeStatusData(targetPortfolio);
             }
         }
 
@@ -84,7 +104,7 @@ namespace Com.Funcom.FishAdventure.Controller.AI
 
         }
 
-        public Portfolio GetTargetPortfolio()
+        /*public Portfolio GetTargetPortfolio()
         {
             return targetPortfolio;
         }
@@ -92,6 +112,6 @@ namespace Com.Funcom.FishAdventure.Controller.AI
         public void SetTargetPortfolio(Portfolio portfolio)
         {
             targetPortfolio = portfolio;
-        }
+        }*/
     }
 }

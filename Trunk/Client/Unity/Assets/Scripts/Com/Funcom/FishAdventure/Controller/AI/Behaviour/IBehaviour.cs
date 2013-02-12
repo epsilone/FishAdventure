@@ -1,4 +1,3 @@
-using Com.Funcom.FishAdventure.Component.Fish.Profile;
 
 namespace Com.Funcom.FishAdventure.Controller.AI.Behaviour
 {
@@ -6,8 +5,8 @@ namespace Com.Funcom.FishAdventure.Controller.AI.Behaviour
     {
         int Score { get; set; }
         void Destroy();
-        void ComputeStatusData(Portfolio portfolio);
-        Personality GetImpact();
+        //void ComputeStatusData(Portfolio portfolio);
+        //Personality GetImpact();
         int GetAnimationTypeId();
         IAnimationParameter GetAnimationParameter();
     }
