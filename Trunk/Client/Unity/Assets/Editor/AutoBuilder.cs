@@ -76,7 +76,7 @@ public static class AutoBuilder {
 	static void PerformiOSBuild ()
 	{
 		EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTarget.iPhone);
-        BuildPipeline.BuildPlayer(GetScenePaths(), "Bin/" + GetProjectName(), BuildTarget.iPhone, BuildOptions.None);
+        BuildPipeline.BuildPlayer(GetScenePaths(), "Bin/" + GetProjectName(), BuildTarget.iPhone, BuildOptions.AcceptExternalModificationsToPlayer);
 	}
 	[MenuItem("File/AutoBuilder/Android")]
 	static void PerformAndroidBuild ()
