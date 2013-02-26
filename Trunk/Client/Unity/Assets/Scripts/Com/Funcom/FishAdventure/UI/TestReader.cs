@@ -11,86 +11,51 @@ public class TestReader:MonoBehaviour
 	{
 		if (GUI.Button(new Rect(Screen.width-100,((Screen.height / 5) * 1) - 15,100,30),"Mario"))
 		{
-			if(Fish != null)
-			{
-				Destroy(Fish);
-			}
-			
-            Fish = LEGOXMLReader.GetLegoObjectByLxfml((Resources.Load("redmariofish", typeof(TextAsset)) as TextAsset).text, "Fish");
-			Fish.AddComponent("ViewDrag");
-			//GenericUtil.CombineChildMeshes(Fish);
-			//GenericUtil.CreateBones(Fish);
-			//GenericUtil.SkinIt(Fish, 0.10f);
-			//GenericUtil.Center(Fish);
-			
-			//Animation
-			/*fishGameObject.AddComponent<Animation>();
-			fishGameObject.animation.AddClip(animationBuffer, "idle");
-			fishGameObject.animation.wrapMode = WrapMode.Loop;
-		    fishGameObject.animation.Play("idle");*/
+			InvokeFish("redmariofish");
 		}
 		
 		if (GUI.Button(new Rect(Screen.width-100,((Screen.height / 5) * 2) - 15,100,30),"Block"))
 		{
-			if(Fish != null)
-			{
-				Destroy(Fish);
-			}
-			
-            Fish = LEGOXMLReader.GetLegoObjectByLxfml((Resources.Load("fish", typeof(TextAsset)) as TextAsset).text, "Fish");
-			Fish.AddComponent("ViewDrag");
-			//GenericUtil.CombineChildMeshes(Fish);
-			//GenericUtil.CreateBones(Fish);
-			//GenericUtil.SkinIt(Fish, 0.10f);
-			//GenericUtil.Center(Fish);
-			
-			//Animation
-			/*fishGameObject.AddComponent<Animation>();
-			fishGameObject.animation.AddClip(animationBuffer, "idle");
-			fishGameObject.animation.wrapMode = WrapMode.Loop;
-		    fishGameObject.animation.Play("idle");*/
+			InvokeFish("fish");
 		}
 		
 		if (GUI.Button(new Rect(Screen.width-100,((Screen.height / 5) * 3) - 15,100,30),"Bus"))
 		{
-			if(Fish != null)
-			{
-				Destroy(Fish);
-			}
-			
-            Fish = LEGOXMLReader.GetLegoObjectByLxfml((Resources.Load("thebus", typeof(TextAsset)) as TextAsset).text, "Fish");
-			Fish.AddComponent("ViewDrag");
-			//GenericUtil.CombineChildMeshes(Fish);
-			//GenericUtil.CreateBones(Fish);
-			//GenericUtil.SkinIt(Fish, 0.10f);
-			//GenericUtil.Center(Fish);
-			
-			//Animation
-			/*fishGameObject.AddComponent<Animation>();
-			fishGameObject.animation.AddClip(animationBuffer, "idle");
-			fishGameObject.animation.wrapMode = WrapMode.Loop;
-		    fishGameObject.animation.Play("idle");*/
+			InvokeFish("thebus");
 		}
 		
 		if (GUI.Button(new Rect(Screen.width-100,((Screen.height / 5) * 4) - 15,100,30),"Octopod"))
 		{
-			if(Fish != null)
-			{
-				Destroy(Fish);
-			}
-			
-            Fish = LEGOXMLReader.GetLegoObjectByLxfml((Resources.Load("octopod", typeof(TextAsset)) as TextAsset).text, "Fish");
-			Fish.AddComponent("ViewDrag");
-			//GenericUtil.CombineChildMeshes(Fish);
-			//GenericUtil.CreateBones(Fish);
-			//GenericUtil.SkinIt(Fish, 0.10f);
-			//GenericUtil.Center(Fish);
-			
-			//Animation
-			/*fishGameObject.AddComponent<Animation>();
-			fishGameObject.animation.AddClip(animationBuffer, "idle");
-			fishGameObject.animation.wrapMode = WrapMode.Loop;
-		    fishGameObject.animation.Play("idle");*/
+			InvokeFish("octopod");
+		}
+	}
+	
+	private void InvokeFish(string xmlName)
+	{
+		if(Fish != null)
+		{
+			Destroy(Fish);
+		}
+		
+        Fish = LEGOXMLReader.GetLegoObjectByLxfml((Resources.Load(xmlName, typeof(TextAsset)) as TextAsset).text, "Fish");
+		Fish.AddComponent("ViewDrag");
+		GenericUtil.CombineChildMeshes(Fish);
+		//GenericUtil.Center(Fish);
+		GenericUtil.CreateBones(Fish);
+		GenericUtil.SkinIt(Fish, 0.0f);
+		
+		//Animation
+		Fish.AddComponent<Animation>();
+		Fish.animation.AddClip(animationBuffer, "idle");
+		Fish.animation.wrapMode = WrapMode.Loop;
+	    Fish.animation.Play("idle");
+	}
+	
+	void LateUpdate()
+	{
+		if(Fish != null)
+		{
+			Fish.GetComponent<SkinnedMeshRenderer>().bones[0].transform.Rotate(90, 0, 0);
 		}
 	}
 }

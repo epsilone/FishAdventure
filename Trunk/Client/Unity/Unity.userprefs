@@ -1,8 +1,9 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="..\..\..\..\..\..\FishViewer2\Assets\Scripts\FishInvoke.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Com\Funcom\FishAdventure\UI\TestReader.cs">
     <Files>
-      <File FileName="..\..\..\..\..\..\FishViewer2\Assets\Scripts\FishInvoke.cs" Line="40" Column="34" />
+      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\UI\TestReader.cs" Line="53" Column="2" />
+      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\Util\GenericUtil.cs" Line="256" Column="4" />
     </Files>
   </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>

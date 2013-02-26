@@ -116,36 +116,39 @@ public static class GenericUtil
         	return;
 		}
 		
+		Vector3 size = skinnedMeshRenderer.sharedMesh.bounds.size;
+		
 		//BONES CREATION
 	    Transform[] bones = new Transform[4];
 	    Matrix4x4[] bindPoses = new Matrix4x4[4];
 	
-	    bones[0] = new GameObject ("Bone1").transform;
+	    bones[0] = new GameObject ("Bone01").transform;
 	    bones[0].parent = obj.transform;
 	    bones[0].localRotation = Quaternion.identity;
-	    bones[0].localPosition = new Vector3 (0, 0, 2.2f);
+	    bones[0].localPosition = new Vector3 (0, size.y * 0.5f, size.z * 0.5f);
 	    bindPoses[0] = bones[0].worldToLocalMatrix * obj.transform.localToWorldMatrix;
 		
-		bones[1] = new GameObject ("Bone2").transform;
+		bones[1] = new GameObject ("Bone02").transform;
 	    bones[1].parent = bones[0].transform;
 	    bones[1].localRotation = Quaternion.identity;
-	    bones[1].localPosition = new Vector3 (-3, 0, 0);
+	    bones[1].localPosition = new Vector3 (size.x * 0.33f, 0, 0);
 	    bindPoses[1] = bones[1].worldToLocalMatrix * bones[0].transform.localToWorldMatrix;
 		
-		bones[2] = new GameObject ("Bone3").transform;
+		bones[2] = new GameObject ("Bone03").transform;
 	    bones[2].parent = bones[1].transform;
 	    bones[2].localRotation = Quaternion.identity;
-	    bones[2].localPosition = new Vector3 (-3, 0, 0);
+	    bones[2].localPosition = new Vector3 (size.x * 0.33f, 0, 0);
 	    bindPoses[2] = bones[2].worldToLocalMatrix * bones[1].transform.localToWorldMatrix;
 		
-		bones[3] = new GameObject ("Bone4").transform;
+		bones[3] = new GameObject ("Bone04").transform;
 	    bones[3].parent = bones[2].transform;
 	    bones[3].localRotation = Quaternion.identity;
-	    bones[3].localPosition = new Vector3 (-3, 0, 0);
+	    bones[3].localPosition = new Vector3 (size.x * 0.33f, 0, 0);
 	    bindPoses[3] = bones[3].worldToLocalMatrix * bones[2].transform.localToWorldMatrix;
 	
 	    skinnedMeshRenderer.sharedMesh.bindposes = bindPoses;
 	    skinnedMeshRenderer.bones = bones;
+		skinnedMeshRenderer.rootBone = bones[0];
 	}
 	
 	public static void SkinIt (GameObject obj, float minimalBoneWeight)
@@ -212,21 +215,25 @@ public static class GenericUtil
 	    	return;
 		}
 		
-		Vector3 size = skinnedMeshRenderer.bounds.size;
-		Debug.Log(size);
-		float Xpos = -(size.x * 0.5f);
-		float Ypos = (size.y * 0.5f);
-		float Zpos = (size.z * 0.5f);
-		Vector3 verticeBuffer;
+		Vector3 size = skinnedMeshRenderer.sharedMesh.bounds.size;
+		Vector3 position = skinnedMeshRenderer.transform.position;
+		Debug.Log("size: " + size);
+		Debug.Log("position: " + position);
+		Vector3[] verticeList = skinnedMeshRenderer.sharedMesh.vertices;
+		Vector3[] newVerticeList = new Vector3[verticeList.Length];
 		
-		for(int verticeIndex = 0; verticeIndex < skinnedMeshRenderer.sharedMesh.vertices.Length; verticeIndex++)
+		for(int vIndex = 0; vIndex < verticeList.Length; vIndex++)
 		{
-			verticeBuffer = skinnedMeshRenderer.sharedMesh.vertices[verticeIndex];
-			verticeBuffer.x = 1;
-			verticeBuffer.y = 1;
-			verticeBuffer.z = 1;
+			Vector3 verticeBuffer = new Vector3();
 			
+			verticeBuffer.x = verticeList[vIndex].x + (size.x * 0.5f);
+			verticeBuffer.y = verticeList[vIndex].y - (size.y * 0.5f);
+			verticeBuffer.z = verticeList[vIndex].z - 2.85f;//(size.z * 0.5f);
+			
+			newVerticeList[vIndex] = verticeBuffer;
 		}
+		
+		skinnedMeshRenderer.sharedMesh.vertices = newVerticeList;
 	}
 	
 	private static BoneWeight GetBoneWeightByVerticeInfo(List<Vector2> boneWeightByVertice, float minimalBoneWeight)
