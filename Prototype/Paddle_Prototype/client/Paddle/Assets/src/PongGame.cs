@@ -2,152 +2,101 @@ using UnityEngine;
 using System;
 using System.Collections.Generic;
 using System.Collections;
+using Paddle;
+using XnaGeometry;
+using System.Net.Sockets;
+using PaddleTransport;
+using PaddleThrift;
+using System.IO;
+using Thrift.Transport;
+using Thrift.Protocol;
+using System.Net;
 
-public class PongGame : MonoBehaviour 
+public class PongGame : MonoBehaviour
 {
-    private List<PongEntity> staticEntities;
-    private List<PongEntity> dynamicEntities;
+    #region
+
+    private static Matrix MODEL_VIEW = Matrix.CreateScale(0.080, 0.080, 1.0);
+    private static Matrix MODEL_VIEW_SCALE = Matrix.CreateScale(0.160, 0.160, 1.0);
+
+    #endregion
 
     private Transform LeftPaddle { get; set; }
     private Transform RightPaddle { get; set; }
     private Transform Ball { get; set; }
 
-    private int playerOne;
-    private int playerTwo;
+    private Pong Game { get; set; }
+    private int PlayerId { get; set; }
 
-    public void Register(PongEntity entity)
-    {
-        var list = entity.isStatic ? staticEntities : dynamicEntities;
-        list.Add(entity);
-    }
+    #region Network
 
-    void Awake()
-    {
-        staticEntities = new List<PongEntity>();
-        dynamicEntities = new List<PongEntity>();
-    }
+    private static readonly string PLAYER_ONE = "PlayerOne";
+    private static readonly string PLAYER_TWO = "PlayerTwo";
+
+    private TcpClient Client { get; set; }
+    private MessageQueue Queue { get; set; }
+    private bool GameStarted { get; set; }
+
+    #endregion
 
     void Start()
     {
-        playerOne = 0;
-        playerTwo = 0;
+        Game = new Pong();
+        Game.PlayerOne = new LocalPlayer();
+        Game.PlayerTwo = new LocalPlayer();
+        PlayerId = 1;
+
+        ApplyModelViewPosition(Game.BottomBorder.Position, GameObject.Find("BottomBorder").transform);
+        ApplyModelViewScale(Game.BottomBorder.Scale, GameObject.Find("BottomBorder").transform);
+
+        ApplyModelViewPosition(Game.TopBorder.Position, GameObject.Find("TopBorder").transform);
+        ApplyModelViewScale(Game.TopBorder.Scale, GameObject.Find("TopBorder").transform);
+
         LeftPaddle = GameObject.Find("LeftPaddle").transform;
+        ApplyModelViewPosition(Game.LeftPaddle.Position, LeftPaddle.transform);
+        ApplyModelViewScale(Game.LeftPaddle.Scale, LeftPaddle.transform);
+
         RightPaddle = GameObject.Find("RightPaddle").transform;
+        ApplyModelViewPosition(Game.RightPaddle.Position, RightPaddle.transform);
+        ApplyModelViewScale(Game.RightPaddle.Scale, RightPaddle.transform);
+
         Ball = GameObject.Find("Ball").transform;
+        ApplyModelViewPosition(Game.Ball.Position, Ball.transform);
+        ApplyModelViewScale(Game.Ball.Scale, Ball.transform);
+
+
+        // Network
+        Client = new TcpClient(AddressFamily.InterNetwork);
+        Client.NoDelay = true;
+        Client.Connect(new IPEndPoint(IPAddress.Parse("10.9.42.223"), 8123));
+        Queue = new MessageQueue();
     }
-
-    //void Update()
-    //{
-    //    if (Ball.localPosition.x > RightPaddle.localPosition.x)
-    //    {
-    //        playerOne += 1;
-    //        Ball.transform.localPosition = Vector3.zero;
-    //    }
-
-    //    if (Ball.localPosition.x < LeftPaddle.localPosition.x)
-    //    {
-    //        playerTwo += 1;
-    //        Ball.transform.localPosition = Vector3.zero;
-    //    }
-
-    //    float dt = Time.deltaTime;
-    //    foreach (PongEntity entity in dynamicEntities)
-    //    {
-    //        var entityBox = new Bounds(entity.transform.localPosition, entity.transform.localScale);
-    //        entity.gameObject.transform.Translate(entity.Displacement * entity.speed * dt);
-    //        foreach (PongEntity staticEntity in staticEntities)
-    //        {
-    //            var staticEntityBox = new Bounds(staticEntity.transform.localPosition, staticEntity.transform.localScale);
-    //            if (entityBox.Intersects(staticEntityBox))
-    //            {
-    //                Debug.Log(entity.transform.localPosition);
-    //                Debug.Log(entity.gameObject.name + " collides with " + staticEntity.gameObject.name);
-    //                var dotProduct = Vector3.Dot(entity.Displacement, staticEntity.normal);
-    //                entity.Displacement = entity.Displacement - (2 * dotProduct * staticEntity.normal);
-    //                entity.Displacement.Normalize();
-    //                var x = entity.transform.localPosition.x;
-    //                var y = entity.transform.localPosition.y;
-    //                Debug.Log("Before: " + entity.transform.localPosition);
-    //                if (staticEntity.normal.x > 0)
-    //                {
-    //                    x += (staticEntity.transform.localScale.x + entity.transform.localScale.x) / 2.0f;
-    //                }
-    //                else if (staticEntity.normal.x < 0)
-    //                {
-    //                    x -= (staticEntity.transform.localScale.x + entity.transform.localScale.x) / 2.0f;
-    //                }
-
-    //                if (staticEntity.normal.y > 0)
-    //                {
-    //                    y += (staticEntity.transform.localScale.y + entity.transform.localScale.y) / 2.0f;
-    //                }
-    //                else if (staticEntity.normal.y < 0)
-    //                {
-    //                    y -= (staticEntity.transform.localScale.y + entity.transform.localScale.y) / 2.0f;
-    //                }
-
-    //                entity.transform.localPosition = new Vector3(x, y, 0.0f);
-    //                Debug.Log("After: " + entity.transform.localPosition);
-    //            }
-    //        }
-    //    }
-    //}
 
     void Update()
     {
-        if (Ball.localPosition.x > RightPaddle.localPosition.x + 5.0f)
-        {
-            playerOne += 1;
-            Ball.transform.localPosition = Vector3.zero;
-        }
+        var dt = Time.deltaTime;
+        //Game.Update(dt);  // Control single player or network
+        ApplyModelViewPosition(Game.Ball.Position, Ball.transform);
 
-        if (Ball.localPosition.x < LeftPaddle.localPosition.x - 5.0f)
+        float vertical = Input.GetAxis("Vertical");
+        if (PlayerId == 1)
         {
-            playerTwo += 1;
-            Ball.transform.localPosition = Vector3.zero;
+            var move = Game.LeftPaddle.Position.Y + (vertical * dt * 100);
+            Game.LeftPaddle.Position = new XnaGeometry.Vector2(Game.LeftPaddle.Position.X, move);
+            ApplyModelViewPosition(Game.LeftPaddle.Position, LeftPaddle.transform);
         }
-        float dt = Time.deltaTime;
-        float consummed = dt;
-        var ballPongEntity = Ball.GetComponent<PongEntity>();
-        while (consummed > 0)
+        else
         {
-            var displacement = ballPongEntity.Displacement * ballPongEntity.speed * consummed;
-            foreach (PongEntity staticEntity in staticEntities)
-            {
-                var d0 = Vector3.Dot(Ball.localPosition - staticEntity.transform.localPosition, staticEntity.normal);
-                var translatedEntity = new Vector3(Ball.localPosition.x + displacement.x, Ball.localPosition.y + displacement.y, 0.0f);
-                var d1 = Vector3.Dot(translatedEntity - staticEntity.transform.localPosition, staticEntity.normal);
-                if (d0 > Ball.localScale.x && d1 < Ball.localScale.x)
-                {
-                    var u = (d0 - Ball.localScale.x) / (d0 - d1);
-                    var intersectionPoint = ((1 - u) * Ball.localPosition) + (u * translatedEntity);
-                    var scale = new Vector3(staticEntity.transform.localScale.x + 1.0f, staticEntity.transform.localScale.y + 1.0f, staticEntity.transform.localScale.z);
-                    var bounds = new Bounds(staticEntity.transform.localPosition, scale);
-                    if (bounds.Contains(intersectionPoint))
-                    {
-                        var distanceToIntersect = Vector3.Distance(Ball.localPosition, intersectionPoint);
-                        consummed -= (distanceToIntersect * consummed / displacement.magnitude);
-                        Ball.transform.localPosition = intersectionPoint;
-                        var dotProduct = Vector3.Dot(ballPongEntity.Displacement, staticEntity.normal);
-                        ballPongEntity.Displacement = ballPongEntity.Displacement - (2 * dotProduct * staticEntity.normal);
-
-                        Debug.Log("Ball position: " + Ball.localPosition);
-                        Debug.Log("DeltaTime: " + consummed);
-                        Debug.Log("IntersectionPoint :" + intersectionPoint + " time: " + u);
-                        Debug.Log("Distance: " + distanceToIntersect);
-                        Debug.Log("displacement: " + displacement.magnitude);
-                        Debug.Log("translatedEntity: " + translatedEntity);
-                        Debug.Log("Consummed: " + consummed);
-                    }
-                }
-            }
-
-            if (consummed > 0)
-            {
-                Ball.Translate(displacement);
-                consummed = 0.0f;
-            }
+            var move = Game.RightPaddle.Position.Y + (vertical * dt * 100);
+            Game.RightPaddle.Position = new XnaGeometry.Vector2(Game.RightPaddle.Position.X, move);
+            ApplyModelViewPosition(Game.RightPaddle.Position, RightPaddle.transform);
         }
+    }
+
+    void FixedUpdate()
+    {
+        Debug.Log("FixedUpdate");
+        doNetwork();
     }
 
     void OnGUI()
@@ -159,7 +108,7 @@ public class PongGame : MonoBehaviour
         GUILayout.Label("Player 1", p1Style);
         p1Style = new GUIStyle(GUI.skin.label);
         p1Style.fontSize = 40;
-        GUILayout.Label("" + playerOne, p1Style);
+        GUILayout.Label("" + Game.PlayerOne.Points, p1Style);
         GUILayout.EndVertical();
         GUILayout.BeginVertical();
         var p2Style = new GUIStyle(GUI.skin.label);
@@ -169,9 +118,119 @@ public class PongGame : MonoBehaviour
         p2Style = new GUIStyle(GUI.skin.label);
         p2Style.fontSize = 40;
         p2Style.alignment = TextAnchor.MiddleRight;
-        GUILayout.Label("" + playerTwo, p2Style);
+        GUILayout.Label("" + Game.PlayerTwo.Points, p2Style);
         GUILayout.EndVertical();
         GUILayout.EndHorizontal();
     }
 
+    private static void ApplyModelViewPosition(XnaGeometry.Vector2 model, Transform view)
+    {
+        XnaGeometry.Vector2 transformed;
+        XnaGeometry.Vector2.Transform(ref model, ref MODEL_VIEW, out transformed);
+        view.localPosition = new UnityEngine.Vector3((float)transformed.X, (float)transformed.Y, view.localPosition.z);
+    }
+
+    private static void ApplyModelViewScale(XnaGeometry.Vector2 model, Transform view)
+    {
+        XnaGeometry.Vector2 transformed;
+        XnaGeometry.Vector2.Transform(ref model, ref MODEL_VIEW_SCALE, out transformed);
+        view.localScale = new UnityEngine.Vector3((float)transformed.X, (float)transformed.Y, view.localScale.z);
+    }
+
+    private void doNetwork()
+    {
+        if (Client.Available > 0)
+        {
+            Debug.Log("Receive network data");
+            var networkStream = Client.GetStream();
+            var buffer = new byte[Client.ReceiveBufferSize];
+            int read = networkStream.Read(buffer, 0, buffer.Length);
+            if (read == 0)
+            {
+                // Connection closed
+                Debug.Log("Connection remotely closed");
+            }
+            else
+            {
+                //Console.WriteLine("Reading {0}, {1}", read, BitConverter.ToString(buffer).Replace("-", string.Empty));
+                var packet = Utils.Deserialize<PaddlePacket>(buffer);
+                using (var stream = new MemoryStream(packet.RawData))
+                {
+                    var transport = new TStreamTransport(stream, null);
+                    var protocol = new TBinaryProtocol(transport);
+                    for (int i = 0; i < packet.Count; ++i)
+                    {
+                        var messageId = (MessageId)protocol.ReadI32();
+                        if (messageId == MessageId.ENTITY_POSITION)
+                        {
+                            var entityPosition = new EntityPosition();
+                            entityPosition.Read(protocol);
+                            if (entityPosition.Name.Equals(PLAYER_ONE))
+                            {
+                                Game.LeftPaddle.Position = new XnaGeometry.Vector2(entityPosition.PositionX, entityPosition.PositionY);
+                                ApplyModelViewPosition(Game.LeftPaddle.Position, LeftPaddle.transform);
+                            }
+                            else if (entityPosition.Name.Equals(PLAYER_TWO))
+                            {
+                                Game.RightPaddle.Position = new XnaGeometry.Vector2(entityPosition.PositionX, entityPosition.PositionY);
+                                ApplyModelViewPosition(Game.RightPaddle.Position, RightPaddle.transform);
+                            }
+                            else if (entityPosition.Name.Equals("Ball"))
+                            {
+                                Game.Ball.Position = new XnaGeometry.Vector2(entityPosition.PositionX, entityPosition.PositionY);
+                            }
+                        }
+                        else if (messageId == MessageId.POINTS_UPDATE)
+                        {
+                            Debug.Log("Received Points Update message");
+                            var pointsUpdate = new PointsUpdate();
+                            pointsUpdate.Read(protocol);
+                            Game.PlayerOne.Points = pointsUpdate.PlayerOneScore;
+                            Game.PlayerTwo.Points = pointsUpdate.PlayerTwoScore;
+                        }
+                        else if (messageId == MessageId.GAME_START)
+                        {
+                            Debug.Log("Received Game Start message");
+                            var gameStart = new GameStart();
+                            gameStart.Read(protocol);
+                            Game.PlayerOne = new LocalPlayer();
+                            Game.PlayerTwo = new LocalPlayer();
+                            PlayerId = gameStart.PlayerId;
+                            GameStarted = true;
+                        }
+                        else if (messageId == MessageId.GAME_OVER)
+                        {
+                            Debug.Log("Received Game Over message");
+                        }
+                        else
+                        {
+                            Debug.LogError("Unsupported message id: " + messageId);
+                        }
+                    }
+                }
+            }
+        }
+
+        if (GameStarted)
+        {
+            var paddlePosition = new EntityPosition();
+            if (PlayerId == 1)
+            {
+                paddlePosition.Name = PLAYER_ONE;
+                paddlePosition.PositionX = Game.LeftPaddle.Position.X;
+                paddlePosition.PositionY = Game.LeftPaddle.Position.Y;
+            }
+            else
+            {
+                paddlePosition.Name = PLAYER_TWO;
+                paddlePosition.PositionX = Game.RightPaddle.Position.X;
+                paddlePosition.PositionY = Game.RightPaddle.Position.Y;
+            }
+
+            Queue.Add(MessageId.ENTITY_POSITION, paddlePosition);
+            byte[] raw = Queue.BuildPacket();
+            Client.GetStream().Write(raw, 0, raw.Length);
+        }
+
+    }
 }
