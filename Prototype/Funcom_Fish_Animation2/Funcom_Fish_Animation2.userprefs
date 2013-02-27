@@ -1,0 +1,16 @@
+﻿<Properties>
+  <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\UIInvokeFish.cs">
+    <Files>
+      <File FileName="Assets\Scripts\ProceduralSkinning\CreateFishBones.cs" Line="72" Column="32" />
+      <File FileName="Assets\Scripts\SkinningTest.cs" Line="70" Column="35" />
+      <File FileName="Assets\Scripts\ProceduralSkinning\AutoSkinner.cs" Line="21" Column="40" />
+      <File FileName="Assets\Scripts\UIInvokeFish.cs" Line="17" Column="1" />
+      <File FileName="Assets\Scripts\CombineMeshes.cs" Line="48" Column="68" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.DebuggingService.Breakpoints>
+    <BreakpointStore />
+  </MonoDevelop.Ide.DebuggingService.Breakpoints>
+  <MonoDevelop.Ide.DebuggingService.PinnedWatches />
+</Properties>
