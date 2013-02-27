@@ -18,7 +18,7 @@ public static class GenericUtil
 	
 	#endregion
 
-	public static void CombineChildMeshes(GameObject obj)
+	public static void CombineChildMeshesToSkin(GameObject obj)
 	{
 		// Find all mesh filter submeshes and separate them by their cooresponding materials
         ArrayList materials = new ArrayList();
@@ -107,6 +107,99 @@ public static class GenericUtil
             
 	}
 	
+	public static void CombineChildMeshesToFilter(GameObject obj)
+	{
+		// Find all mesh filter submeshes and separate them by their cooresponding materials
+        ArrayList materials = new ArrayList();
+        ArrayList combineInstanceArrays = new ArrayList();
+		
+        MeshFilter[] meshFilters = obj.GetComponentsInChildren<MeshFilter>();
+
+        foreach( MeshFilter meshFilter in meshFilters )
+        {
+            MeshRenderer meshRenderer = meshFilter.GetComponent<MeshRenderer>();
+
+            // Handle bad input
+            if(!meshRenderer) { 
+                Debug.LogError("MeshFilter does not have a coresponding MeshRenderer."); 
+                continue; 
+            }
+            if(meshRenderer.materials.Length != meshFilter.sharedMesh.subMeshCount) { 
+                Debug.LogError("Mismatch between material count and submesh count. Is this the correct MeshRenderer?"); 
+                continue; 
+            }
+
+            for(int s = 0; s < meshFilter.sharedMesh.subMeshCount; s++)
+            {
+                int materialArrayIndex = 0;
+                for(materialArrayIndex = 0; materialArrayIndex < materials.Count; materialArrayIndex++)
+                {
+                    if(materials[materialArrayIndex] == meshRenderer.sharedMaterials[s])
+                        break;
+                }
+
+                if(materialArrayIndex == materials.Count)
+                {
+                    materials.Add(meshRenderer.sharedMaterials[s]);
+                    combineInstanceArrays.Add(new ArrayList());
+                }
+
+                CombineInstance combineInstance = new CombineInstance();
+                combineInstance.transform = meshRenderer.transform.localToWorldMatrix;
+                combineInstance.subMeshIndex = s;
+                combineInstance.mesh = meshFilter.sharedMesh;
+                (combineInstanceArrays[materialArrayIndex] as ArrayList).Add( combineInstance );
+				
+				GameObject childGameObject = meshFilter.gameObject as GameObject;
+				childGameObject.SetActive(false);
+            }
+        }
+ 
+        // For MeshFilter
+        {
+            // Get / Create mesh filter
+            MeshFilter meshFilter = obj.GetComponent<MeshFilter>();
+            if(!meshFilter)
+                meshFilter = obj.AddComponent<MeshFilter>();
+			
+			MeshRenderer meshRenderer = obj.GetComponent<MeshRenderer>();
+            if(!meshRenderer)
+                meshRenderer = obj.AddComponent<MeshRenderer>();
+ 
+            // Combine by material index into per-material meshes
+            // also, Create CombineInstance array for next step
+            Mesh[] meshes = new Mesh[materials.Count];
+            CombineInstance[] combineInstances = new CombineInstance[materials.Count];
+ 
+            for( int m = 0; m < materials.Count; m++ )
+            {
+                CombineInstance[] combineInstanceArray = (combineInstanceArrays[m] as ArrayList).ToArray(typeof(CombineInstance)) as CombineInstance[];
+                meshes[m] = new Mesh();
+                meshes[m].CombineMeshes( combineInstanceArray, true, true );
+ 
+                combineInstances[m] = new CombineInstance();
+                combineInstances[m].mesh = meshes[m];
+                combineInstances[m].subMeshIndex = 0;
+            }
+ 
+            // Combine into one
+            meshFilter.sharedMesh = new Mesh();
+            meshFilter.sharedMesh.CombineMeshes( combineInstances, false, false );
+ 
+            // Destroy other meshes
+            /*foreach( Mesh mesh in meshes )
+            {
+                mesh.Clear();
+                DestroyImmediate(mesh);
+            }*/
+			
+			// Assign materials
+            Material[] materialsArray = materials.ToArray(typeof(Material)) as Material[];
+            meshRenderer.materials = materialsArray;
+        }
+            
+	}
+	
 	public static void CreateBones(GameObject obj)
 	{
 		SkinnedMeshRenderer skinnedMeshRenderer = obj.GetComponent<SkinnedMeshRenderer>();
@@ -140,7 +233,7 @@ public static class GenericUtil
 	    bones[2].localPosition = new Vector3 (size.x * 0.33f, 0, 0);
 	    bindPoses[2] = bones[2].worldToLocalMatrix * bones[1].transform.localToWorldMatrix;
 		
-		bones[3] = new GameObject ("Bone04").transform;
+		bones[3] = new GameObject ("Bone4").transform;
 	    bones[3].parent = bones[2].transform;
 	    bones[3].localRotation = Quaternion.identity;
 	    bones[3].localPosition = new Vector3 (size.x * 0.33f, 0, 0);
