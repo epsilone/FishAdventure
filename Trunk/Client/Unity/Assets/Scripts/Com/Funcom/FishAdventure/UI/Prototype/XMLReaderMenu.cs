@@ -1,5 +1,4 @@
 using com.funcom.legoxmlreader;
-using Com.Funcom.FishAdventure.Component.Entity.Living.Type;
 using UnityEngine;
 
 public class XMLReaderMenu:MonoBehaviour 
