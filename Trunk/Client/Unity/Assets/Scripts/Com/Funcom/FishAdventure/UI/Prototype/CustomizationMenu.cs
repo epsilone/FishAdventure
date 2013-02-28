@@ -1,6 +1,5 @@
 using UnityEngine;
 using com.funcom.legoxmlreader;
-using Com.Funcom.FishAdventure.Component.Entity.Living.Type;
 using System.Collections;
 
 public class CustomizationMenu : MonoBehaviour {
