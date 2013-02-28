@@ -89,8 +89,8 @@ public class CustomizationMenu : MonoBehaviour {
         staticCube.transform.localScale = new Vector3(1f, 1f, 0.1f);
         staticCube.name = "CubicFish";
 
-        string materialName = "BasicRed.mat";
-        faceMaterial = (Material)Resources.LoadAssetAtPath("Assets/Resources/Materials/" + materialName, typeof(Material));
+        string materialName = "BasicRed";
+        faceMaterial = (Material)Resources.Load("Materials/" + materialName, typeof(Material));
         staticCube.renderer.material = faceMaterial;
         staticCube.AddComponent("ViewDrag");
         initFaces(staticCube);
@@ -111,12 +111,12 @@ public class CustomizationMenu : MonoBehaviour {
         
         faceTextures = new Texture2D[3];
         for (int i = 0; i < faceTextures.Length; i++) {
-            string textureString = "face_0" + (i + 1) + ".png";
-            faceTextures[i] = (Texture2D)Resources.LoadAssetAtPath("Assets/Resources/Textures/" + textureString, typeof(Texture2D));
+            string textureString = "face_0" + (i + 1);
+            faceTextures[i] = (Texture2D)Resources.Load("Textures/" + textureString, typeof(Texture2D));
         }
 
-        string materialName = "faceMaterial.mat";
-        faceMaterial = (Material)Resources.LoadAssetAtPath("Assets/Resources/Materials/" + materialName, typeof(Material));
+        string materialName = "faceMaterial";
+        faceMaterial = (Material)Resources.Load("Materials/"+materialName, typeof(Material));
 
         faces = new GameObject[2];
         for (int i = 0; i < faces.Length; i++) {
