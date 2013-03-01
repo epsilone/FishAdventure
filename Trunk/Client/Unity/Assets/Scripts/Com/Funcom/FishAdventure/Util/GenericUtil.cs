@@ -185,7 +185,7 @@ public static class GenericUtil
             // Combine into one
             meshFilter.sharedMesh = new Mesh();
             meshFilter.sharedMesh.CombineMeshes( combineInstances, false, false );
- 
+ 			meshFilter.sharedMesh.RecalculateNormals();
             // Destroy other meshes
             /*foreach( Mesh mesh in meshes )
             {
@@ -227,21 +227,21 @@ public static class GenericUtil
 	   	//bones[1].localRotation = Quaternion.identity;
 	    //bones[1].localPosition = new Vector3 (size.x * 0.33f, 0, 0);
 	    //bindPoses[1] = bones[1].worldToLocalMatrix * bones[0].transform.localToWorldMatrix;
-		bindPoses[1] = bones[0].transform.localToWorldMatrix;
+		bindPoses[1] = Matrix4x4.zero;//bones[0].transform.localToWorldMatrix;
 		
 		bones[2] = new GameObject ("Bone03").transform;
 	    bones[2].parent = bones[1].transform;
 	    //bones[2].localRotation = Quaternion.identity;
 	    //bones[2].localPosition = new Vector3 (size.x * 0.33f, 0, 0);
 	    //bindPoses[2] = bones[2].worldToLocalMatrix * bones[1].transform.localToWorldMatrix;
-		bindPoses[2] = bones[1].transform.localToWorldMatrix;
+		bindPoses[2] = Matrix4x4.zero;//bones[1].transform.localToWorldMatrix;
 		
 		bones[3] = new GameObject ("Bone4").transform;
 	    bones[3].parent = bones[2].transform;
 	   	//bones[3].localRotation = Quaternion.identity;
 	    //bones[3].localPosition = new Vector3 (size.x * 0.33f, 0, 0);
 	    //bindPoses[3] = bones[3].worldToLocalMatrix * bones[2].transform.localToWorldMatrix;
-		bindPoses[3] = bones[2].transform.localToWorldMatrix;
+		bindPoses[3] = Matrix4x4.zero;// bones[2].transform.localToWorldMatrix;
 	
 	    skinnedMeshRenderer.sharedMesh.bindposes = bindPoses;
 	    skinnedMeshRenderer.bones = bones;
@@ -284,10 +284,10 @@ public static class GenericUtil
 			//Calculate weight for each bone
 			for(int boneWeightIndex = 0; boneWeightIndex < boneWeightByVertice.Count; boneWeightIndex++)
 			{
-				/*if((verticeIndex % 40) == 0)
+				if((verticeIndex % 80) == 0)
 				{
 					Debug.Log("[ DEBUG ][Distance] - VertexId=" + verticeIndex +  " / BoneId=" + boneWeightByVertice[boneWeightIndex].x + " / Distance=" + boneWeightByVertice[boneWeightIndex].y);
-				}*/
+				}
 				
 				weightBuffer =  (distanceCumulative - boneWeightByVertice[boneWeightIndex].y);
 				weightBuffer = (weightBuffer / (boneWeightByVertice.Count - 1));
@@ -297,16 +297,18 @@ public static class GenericUtil
 			
 			boneWeightList[verticeIndex] = GetBoneWeightByVerticeInfo(boneWeightByVertice, minimalBoneWeight);
 			
-			/*if((verticeIndex % 40) == 0)
+			if((verticeIndex % 80) == 0)
 			{
 				foreach(Vector2 vec in boneWeightByVertice)
 				{
-					Debug.Log("[ DEBUG ][Weight] VertexId=" + verticeIndex +  " / BoneId=" + vec.x + " / Weight=" + vec.y);
+					Debug.Log("[ DEBUG ][Weight] VertexId=" + verticeIndex +  "/ vPos=" + verticeBuffer + " / BoneId=" + vec.x + " / Weight=" + vec.y);
 				}
-			}*/
+			}
 		}
 		
 		skinnedMeshRenderer.sharedMesh.boneWeights = boneWeightList;
+		
+		skinnedMeshRenderer.sharedMesh.RecalculateNormals();
 	}
 	
 	public static void Center (GameObject obj)

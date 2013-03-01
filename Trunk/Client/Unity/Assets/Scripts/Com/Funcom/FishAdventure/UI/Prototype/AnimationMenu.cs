@@ -20,7 +20,7 @@ public class AnimationMenu:MonoBehaviour
 	{
 		PreSkinnedMesh = GameObject.Find("PreSkinned_Mesh");
 		PreSkinnedMesh.AddComponent("ViewDrag");
-		PreSkinnedMesh.SetActive(false);
+		//PreSkinnedMesh.SetActive(false);
 		
 		CustomMesh = GameObject.Find("Custom_Mesh");
 		CustomMesh.AddComponent("ViewDrag");
@@ -108,13 +108,13 @@ public class AnimationMenu:MonoBehaviour
 		    Matrix4x4[] bindPoses = new Matrix4x4[4];
 			
 		    bones[0] = CustomMeshProcSkinning.transform.Find("Bone01").transform;
-			bindPoses[0] = CustomMeshProcSkinning.transform.localToWorldMatrix;
+			bindPoses[0] = CustomMeshProcSkinning.transform.worldToLocalMatrix;
 			bones[1] = bones[0].FindChild("Bone02").transform;
-			bindPoses[1] = bones[0].transform.localToWorldMatrix;
+			bindPoses[1] = bones[0].transform.worldToLocalMatrix;
 			bones[2] = bones[1].FindChild("Bone03").transform;
-			bindPoses[2] = bones[1].transform.localToWorldMatrix;
+			bindPoses[2] = bones[1].transform.worldToLocalMatrix;
 			bones[3] = bones[2].FindChild("Bone04").transform;
-			bindPoses[3] = bones[2].transform.localToWorldMatrix;
+			bindPoses[3] = bones[2].transform.worldToLocalMatrix;
 		
 		    skinnedMeshRenderer.sharedMesh.bindposes = bindPoses;
 		    skinnedMeshRenderer.bones = bones;
@@ -145,6 +145,7 @@ public class AnimationMenu:MonoBehaviour
 			Destroy(Fish);
 			
 			GenericUtil.CombineChildMeshesToSkin(SkinningPrefab);
+			
 			SkinnedMeshRenderer skinnedMeshRenderer = SkinningPrefab.GetComponent<SkinnedMeshRenderer>();
 			
 			//BONES CREATION
@@ -152,19 +153,19 @@ public class AnimationMenu:MonoBehaviour
 		    Matrix4x4[] bindPoses = new Matrix4x4[4];
 			
 		    bones[0] = SkinningPrefab.transform.Find("Bone01").transform;
-			bindPoses[0] = SkinningPrefab.transform.localToWorldMatrix;
+			bindPoses[0] = CustomMeshProcSkinning.transform.worldToLocalMatrix;
 			bones[1] = bones[0].FindChild("Bone02").transform;
-			bindPoses[1] = bones[0].transform.localToWorldMatrix;
+			bindPoses[1] = bones[0].transform.worldToLocalMatrix;
 			bones[2] = bones[1].FindChild("Bone03").transform;
-			bindPoses[2] = bones[1].transform.localToWorldMatrix;
+			bindPoses[2] = bones[1].transform.worldToLocalMatrix;
 			bones[3] = bones[2].FindChild("Bone04").transform;
-			bindPoses[3] = bones[2].transform.localToWorldMatrix;
+			bindPoses[3] = bones[2].transform.worldToLocalMatrix;
 		
 		    skinnedMeshRenderer.sharedMesh.bindposes = bindPoses;
 		    skinnedMeshRenderer.bones = bones;
 			skinnedMeshRenderer.rootBone = bones[0];
 			
-			GenericUtil.SkinIt(SkinningPrefab, 0f);
+			GenericUtil.SkinIt(SkinningPrefab, 0.15f);
 			
 			//Animation
 			SkinningPrefab.animation.wrapMode = WrapMode.Loop;
@@ -206,7 +207,7 @@ public class AnimationMenu:MonoBehaviour
 		{
 			Destroy(Fish);
 		}
-		PreSkinnedMesh.SetActive(false);
+		//PreSkinnedMesh.SetActive(false);
 		
 		
 		Transform[] allChildren = CustomMesh.GetComponentsInChildren<Transform>();
