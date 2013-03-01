@@ -122,7 +122,7 @@
             this.Name = "MainForm";
             this.Text = "MainForm";
             this.Paint += new System.Windows.Forms.PaintEventHandler(this.MainForm_Paint);
-            this.KeyPress += new System.Windows.Forms.KeyPressEventHandler(this.MainForm_KeyPress);
+            this.KeyUp += new System.Windows.Forms.KeyEventHandler(this.MainForm_KeyUp);
             this.infoPanel.ResumeLayout(false);
             this.infoPanel.PerformLayout();
             this.ResumeLayout(false);
