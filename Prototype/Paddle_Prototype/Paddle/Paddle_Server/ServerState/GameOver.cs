@@ -17,17 +17,25 @@ namespace PaddleServer.ServerState
 
         public void OnEnter()
         {
-            
+            Context.Players.ForEach(Disconnect);
         }
 
         public void OnExit()
         {
-            
+            Context.Players.Clear();
         }
 
         public void Update(long dt)
         {
-            
+            Context.Transition(new ReadyState(Context));
+        }
+
+        private void Disconnect(Player player)
+        {
+            if (player.Client.Connected)
+            {
+                player.Client.Close();
+            }
         }
     }
 }

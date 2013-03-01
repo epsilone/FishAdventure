@@ -1,8 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
 using Paddle;
 using PaddleThrift;
 using Thrift.Protocol;
@@ -30,6 +27,7 @@ namespace PaddleServer.ServerState
         private MessageQueue PlayerOneQueue { get; set; }
         private MessageQueue PlayerTwoQueue { get; set; }
         private long Accumulator { get; set; }
+        private bool Running { get; set; }
 
         public PlayState(PaddleContext context)
         {
@@ -44,7 +42,10 @@ namespace PaddleServer.ServerState
         public void OnEnter()
         {
             Context.Players[0].Name = PLAYER_ONE;
+            Context.Players[0].OnPointsUpdated += OnPointsUpdated;
+
             Context.Players[1].Name = PLAYER_TWO;
+            Context.Players[1].OnPointsUpdated += OnPointsUpdated;
 
             var ballPosition = createBallPosition();
             var playerOnePosition = createPlayerOnePosition();
@@ -73,17 +74,22 @@ namespace PaddleServer.ServerState
                 startGame.PlayerId = 2;
                 PlayerTwoQueue.Add(MessageId.GAME_START, startGame);
             }
+
+            Running = true;
         }
 
         public void OnExit()
         {
-            var createPoints = createPointsUpdate();
-            PlayerOneQueue.Add(MessageId.POINTS_UPDATE, createPoints);
-            PlayerTwoQueue.Add(MessageId.POINTS_UPDATE, createPoints);
+            OnPointsUpdated();
 
             var gameOver = new PaddleThrift.GameOver();
             PlayerOneQueue.Add(MessageId.GAME_OVER, gameOver);
             PlayerTwoQueue.Add(MessageId.GAME_OVER, gameOver);
+
+            foreach (var player in Context.Players)
+            {
+                player.OnPointsUpdated -= OnPointsUpdated;
+            }
         }
 
         public void Update(long dt)
@@ -91,19 +97,41 @@ namespace PaddleServer.ServerState
             Accumulator += dt;
             if (Accumulator > NETWORK_UPDATE)
             {
+                if (!Running)
+                {
+                    Console.WriteLine("Sending disconnect to remaining clients");
+                    var gameOver = new PaddleThrift.GameOver();
+                    PlayerOneQueue.Add(MessageId.GAME_OVER, gameOver);
+                    PlayerTwoQueue.Add(MessageId.GAME_OVER, gameOver);
+                }
+
                 doNetwork();
+
+                if (!Running)
+                {
+                    Context.Transition(new GameOver(Context));
+                }
+
                 Accumulator -= NETWORK_UPDATE;
             }
             
-            Pong.Update(dt / 100.0);
+            
             if (Pong.PlayerOne.Points >= POINTS_TO_WIN || Pong.PlayerTwo.Points >= POINTS_TO_WIN)
             {
-                Context.Transition(new GameOver(Context));
+                Running = false;
+            }
+            
+            if (Running)
+            {
+                Pong.Update(dt / 100.0);
             }
         }
 
         private void doNetwork()
         {
+            int removed = Context.Players.RemoveAll(p => !p.Client.Connected);
+            Running = removed == 0;
+
             Trace.WriteLine("Receive network data");
             Context.Players.ForEach(doReceive);
 
@@ -122,7 +150,7 @@ namespace PaddleServer.ServerState
             if (player.Client.Available > 0)
             {
                 var networkStream = player.Client.GetStream();
-                var buffer = new byte[player.Client.ReceiveBufferSize];
+                var buffer = new byte[player.Client.Available];
                 int read = networkStream.Read(buffer, 0, buffer.Length);
                 if (read == 0)
                 {
@@ -131,35 +159,40 @@ namespace PaddleServer.ServerState
                 }
                 else
                 {
+                    Console.WriteLine("Reading {0}, {1}", read, BitConverter.ToString(buffer).Replace("-", string.Empty));
                     var packet = Utils.Deserialize<PaddlePacket>(buffer);
-                    using (var stream = new MemoryStream(packet.RawData))
+                    if (packet.Count > 0)   // TODO: properly read from the socket
                     {
-                        var transport = new TStreamTransport(stream, null);
-                        var protocol = new TBinaryProtocol(transport);
-                        for (int i = 0; i < packet.Count; ++i)
+                        using (var stream = new MemoryStream(packet.RawData))
+                        using (var transport = new TStreamTransport(stream, null))
                         {
-                            var messageId = (MessageId) protocol.ReadI32();
-                            if (messageId == MessageId.ENTITY_POSITION)
+                            var protocol = new TBinaryProtocol(transport);
+                            for (int i = 0; i < packet.Count; ++i)
                             {
-                                var entityPosition = new EntityPosition();
-                                entityPosition.Read(protocol);
-                                if (entityPosition.Name.Equals(PLAYER_ONE))
+                                var messageId = (MessageId)protocol.ReadI32();
+                                if (messageId == MessageId.ENTITY_POSITION)
                                 {
-                                    Pong.LeftPaddle.Position = new XnaGeometry.Vector2(entityPosition.PositionX, entityPosition.PositionY);
-                                    Console.WriteLine("LeftPaddle Position updated {0}", Pong.LeftPaddle.Position);
+                                    var entityPosition = new EntityPosition();
+                                    entityPosition.Read(protocol);
+                                    if (entityPosition.Name.Equals(PLAYER_ONE))
+                                    {
+                                        Pong.LeftPaddle.Position = new XnaGeometry.Vector2(entityPosition.PositionX, entityPosition.PositionY);
+                                    }
+                                    else if (entityPosition.Name.Equals(PLAYER_TWO))
+                                    {
+                                        Pong.RightPaddle.Position = new XnaGeometry.Vector2(entityPosition.PositionX, entityPosition.PositionY);
+                                    }
                                 }
-                                else if (entityPosition.Name.Equals(PLAYER_TWO))
+                                else
                                 {
-                                    Console.WriteLine();
-                                    Pong.RightPaddle.Position = new XnaGeometry.Vector2(entityPosition.PositionX, entityPosition.PositionY);
-                                    Console.WriteLine("RightPaddle Position updated {0}", Pong.RightPaddle.Position);
+                                    Trace.TraceError("Unsupported message id: {0}", messageId);
                                 }
-                            }
-                            else
-                            {
-                                Trace.TraceError("Unsupported message id: {0}", messageId);
                             }
                         }
+                    }
+                    else
+                    {
+                        Trace.TraceInformation("Lost packet");
                     }
                 }
             }
@@ -167,14 +200,22 @@ namespace PaddleServer.ServerState
 
         private void doSend(Player player)
         {
-            var queue = player.Name.Equals(PLAYER_ONE)? PlayerOneQueue : PlayerTwoQueue;
-            if (!queue.IsEmpty())
+            try
             {
-                byte[] raw = queue.BuildPacket();
-                //Console.WriteLine("Writing {0}, {1}", raw.Length, BitConverter.ToString(raw).Replace("-", string.Empty));
+                var queue = player.Name.Equals(PLAYER_ONE) ? PlayerOneQueue : PlayerTwoQueue;
+                if (!queue.IsEmpty())
+                {
+                    byte[] raw = queue.BuildPacket();
+                    Console.WriteLine("Writing {0}, {1}", raw.Length, BitConverter.ToString(raw).Replace("-", string.Empty));
 
-                var stream = player.Client.GetStream();
-                stream.Write(raw, 0, raw.Length);
+                    var stream = player.Client.GetStream();
+                    stream.Write(raw, 0, raw.Length);
+                }
+            }
+            catch (IOException e)
+            {
+                Trace.TraceError("Client is not responding {0}", player);
+                player.Client.Close();
             }
         }
 
@@ -211,6 +252,13 @@ namespace PaddleServer.ServerState
             pointsUpdate.PlayerOneScore = Pong.PlayerOne.Points;
             pointsUpdate.PlayerTwoScore = Pong.PlayerTwo.Points;
             return pointsUpdate;
+        }
+
+        private void OnPointsUpdated()
+        {
+            var createPoints = createPointsUpdate();
+            PlayerOneQueue.Add(MessageId.POINTS_UPDATE, createPoints);
+            PlayerTwoQueue.Add(MessageId.POINTS_UPDATE, createPoints);
         }
     }
 }

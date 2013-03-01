@@ -146,8 +146,8 @@ namespace PaddleForm
                     //Console.WriteLine("Reading {0}, {1}", read, BitConverter.ToString(buffer).Replace("-", string.Empty));
                     var packet = Utils.Deserialize<PaddlePacket>(buffer);
                     using (var stream = new MemoryStream(packet.RawData))
+                    using (var transport = new TStreamTransport(stream, null))
                     {
-                        var transport = new TStreamTransport(stream, null);
                         var protocol = new TBinaryProtocol(transport);
                         for (int i = 0; i < packet.Count; ++i)
                         {
@@ -192,6 +192,7 @@ namespace PaddleForm
                             else if (messageId == MessageId.GAME_OVER)
                             {
                                 Trace.TraceInformation("Received Game Over message");
+                                connected = false;
                             }
                             else
                             {
