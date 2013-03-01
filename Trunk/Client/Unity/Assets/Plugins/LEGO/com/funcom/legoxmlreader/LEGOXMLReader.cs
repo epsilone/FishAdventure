@@ -184,6 +184,7 @@ namespace com.funcom.legoxmlreader
                                 if (transformations.Count == 1)
                                 {
                                     Part p = PartDatabase.Singleton.AddPart(designId, materialId, decoInts, transformations, partRefId);
+                                    
                                     if (p != null)
                                     {
                                         foreach (KeyValuePair<List<int>, PartGroup> entry in groupDraft)
