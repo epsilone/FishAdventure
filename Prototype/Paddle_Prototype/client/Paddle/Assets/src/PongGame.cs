@@ -144,11 +144,6 @@ public class PongGame : MonoBehaviour
         }
     }
 
-    void FixedUpdate()
-    {
-        
-    }
-
     void OnGUI()
     {
         GUILayout.BeginHorizontal(GUILayout.Width(Screen.width));
@@ -207,8 +202,8 @@ public class PongGame : MonoBehaviour
                 if (packet.Count > 0)   // TODO: properly read from the socket
                 {
                     using (var stream = new MemoryStream(packet.RawData))
+                    using (var transport = new TStreamTransport(stream, null))
                     {
-                        var transport = new TStreamTransport(stream, null);
                         var protocol = new TBinaryProtocol(transport);
                         for (int i = 0; i < packet.Count; ++i)
                         {
