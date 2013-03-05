@@ -30,17 +30,26 @@ public class PongGame : MonoBehaviour
 
     #region Network
 
+    private enum NetGameState
+    {
+        Offline,
+        Connected,
+        Started,
+    }
+
     private static readonly string PLAYER_ONE = "PlayerOne";
     private static readonly string PLAYER_TWO = "PlayerTwo";
 
+    private NetGameState State { get; set; }
     private TcpClient Client { get; set; }
     private MessageQueue Queue { get; set; }
-    private bool GameStarted { get; set; }
+    private bool Move { get; set; } // HACK
 
     #endregion
 
     void Start()
     {
+        DebugConsole.Log("Hello World!");
         Game = new Pong();
         Game.PlayerOne = new LocalPlayer();
         Game.PlayerTwo = new LocalPlayer();
@@ -66,37 +75,73 @@ public class PongGame : MonoBehaviour
 
 
         // Network
+        State = NetGameState.Offline;
         Client = new TcpClient(AddressFamily.InterNetwork);
         Client.NoDelay = true;
-        Client.Connect(new IPEndPoint(IPAddress.Parse("10.9.42.223"), 8123));
         Queue = new MessageQueue();
+        Connect();
     }
 
+    void Connect()
+    {
+        Client.Connect(new IPEndPoint(IPAddress.Parse("10.9.42.223"), 8123));
+        State = NetGameState.Connected;
+    }
+
+    private void SendPaddlePosition(GameEntity entity, string name)
+    {
+        var paddlePosition = new EntityPosition();
+        paddlePosition.Name = name;
+        paddlePosition.PositionX = entity.Position.X;
+        paddlePosition.PositionY = entity.Position.Y;
+
+        Queue.Add(MessageId.ENTITY_POSITION, paddlePosition);
+    }
+                
     void Update()
     {
         var dt = Time.deltaTime;
-        //Game.Update(dt);  // Control single player or network
-        ApplyModelViewPosition(Game.Ball.Position, Ball.transform);
-
-        float vertical = Input.GetAxis("Vertical");
-        if (PlayerId == 1)
+        if (State == NetGameState.Started)
         {
-            var move = Game.LeftPaddle.Position.Y + (vertical * dt * 100);
-            Game.LeftPaddle.Position = new XnaGeometry.Vector2(Game.LeftPaddle.Position.X, move);
-            ApplyModelViewPosition(Game.LeftPaddle.Position, LeftPaddle.transform);
-        }
-        else
-        {
-            var move = Game.RightPaddle.Position.Y + (vertical * dt * 100);
-            Game.RightPaddle.Position = new XnaGeometry.Vector2(Game.RightPaddle.Position.X, move);
-            ApplyModelViewPosition(Game.RightPaddle.Position, RightPaddle.transform);
-        }
-    }
+            //Game.Update(dt);  // Control single player or network
+            ApplyModelViewPosition(Game.Ball.Position, Ball.transform);
 
-    void FixedUpdate()
-    {
-        Debug.Log("FixedUpdate");
-        doNetwork();
+            float vertical = Input.GetAxis("Vertical");
+            if (PlayerId == 1)
+            {
+                var move = Game.LeftPaddle.Position.Y + (vertical * dt * 100);
+                Game.LeftPaddle.Position = new XnaGeometry.Vector2(Game.LeftPaddle.Position.X, move);
+                ApplyModelViewPosition(Game.LeftPaddle.Position, LeftPaddle.transform);
+                Move = true;
+            }
+            else
+            {
+                var move = Game.RightPaddle.Position.Y + (vertical * dt * 100);
+                Game.RightPaddle.Position = new XnaGeometry.Vector2(Game.RightPaddle.Position.X, move);
+                ApplyModelViewPosition(Game.RightPaddle.Position, RightPaddle.transform);
+                Move = true;
+            }
+        }
+
+        if (State >= NetGameState.Connected)
+        {
+            try
+            {
+                doNetwork();
+            }
+            catch (IOException e)
+            {
+                Debug.LogWarning("" + e);
+                State = NetGameState.Offline;
+                Client.Close();
+            }
+            catch (SocketException e)
+            {
+                Debug.LogWarning("" + e);
+                State = NetGameState.Offline;
+                Client.Close();
+            }
+        }
     }
 
     void OnGUI()
@@ -143,7 +188,7 @@ public class PongGame : MonoBehaviour
         {
             Debug.Log("Receive network data");
             var networkStream = Client.GetStream();
-            var buffer = new byte[Client.ReceiveBufferSize];
+            var buffer = new byte[Client.Available];
             int read = networkStream.Read(buffer, 0, buffer.Length);
             if (read == 0)
             {
@@ -152,84 +197,92 @@ public class PongGame : MonoBehaviour
             }
             else
             {
-                //Console.WriteLine("Reading {0}, {1}", read, BitConverter.ToString(buffer).Replace("-", string.Empty));
+                Debug.Log("Reading " + BitConverter.ToString(buffer).Replace("-", string.Empty));
                 var packet = Utils.Deserialize<PaddlePacket>(buffer);
-                using (var stream = new MemoryStream(packet.RawData))
+                if (packet.Count > 0)   // TODO: properly read from the socket
                 {
-                    var transport = new TStreamTransport(stream, null);
-                    var protocol = new TBinaryProtocol(transport);
-                    for (int i = 0; i < packet.Count; ++i)
+                    using (var stream = new MemoryStream(packet.RawData))
+                    using (var transport = new TStreamTransport(stream, null))
                     {
-                        var messageId = (MessageId)protocol.ReadI32();
-                        if (messageId == MessageId.ENTITY_POSITION)
+                        var protocol = new TBinaryProtocol(transport);
+                        for (int i = 0; i < packet.Count; ++i)
                         {
-                            var entityPosition = new EntityPosition();
-                            entityPosition.Read(protocol);
-                            if (entityPosition.Name.Equals(PLAYER_ONE))
+                            var messageId = (MessageId)protocol.ReadI32();
+                            if (messageId == MessageId.ENTITY_POSITION)
                             {
-                                Game.LeftPaddle.Position = new XnaGeometry.Vector2(entityPosition.PositionX, entityPosition.PositionY);
-                                ApplyModelViewPosition(Game.LeftPaddle.Position, LeftPaddle.transform);
+                                var entityPosition = new EntityPosition();
+                                entityPosition.Read(protocol);
+                                if (entityPosition.Name.Equals(PLAYER_ONE))
+                                {
+                                    Game.LeftPaddle.Position = new XnaGeometry.Vector2(entityPosition.PositionX, entityPosition.PositionY);
+                                    ApplyModelViewPosition(Game.LeftPaddle.Position, LeftPaddle.transform);
+                                }
+                                else if (entityPosition.Name.Equals(PLAYER_TWO))
+                                {
+                                    Game.RightPaddle.Position = new XnaGeometry.Vector2(entityPosition.PositionX, entityPosition.PositionY);
+                                    ApplyModelViewPosition(Game.RightPaddle.Position, RightPaddle.transform);
+                                }
+                                else if (entityPosition.Name.Equals("Ball"))
+                                {
+                                    Game.Ball.Position = new XnaGeometry.Vector2(entityPosition.PositionX, entityPosition.PositionY);
+                                }
                             }
-                            else if (entityPosition.Name.Equals(PLAYER_TWO))
+                            else if (messageId == MessageId.POINTS_UPDATE)
                             {
-                                Game.RightPaddle.Position = new XnaGeometry.Vector2(entityPosition.PositionX, entityPosition.PositionY);
-                                ApplyModelViewPosition(Game.RightPaddle.Position, RightPaddle.transform);
+                                Debug.Log("Received Points Update message");
+                                var pointsUpdate = new PointsUpdate();
+                                pointsUpdate.Read(protocol);
+                                Game.PlayerOne.Points = pointsUpdate.PlayerOneScore;
+                                Game.PlayerTwo.Points = pointsUpdate.PlayerTwoScore;
                             }
-                            else if (entityPosition.Name.Equals("Ball"))
+                            else if (messageId == MessageId.GAME_START)
                             {
-                                Game.Ball.Position = new XnaGeometry.Vector2(entityPosition.PositionX, entityPosition.PositionY);
+                                Debug.Log("Received Game Start message");
+                                var gameStart = new GameStart();
+                                gameStart.Read(protocol);
+                                Game.PlayerOne = new LocalPlayer();
+                                Game.PlayerTwo = new LocalPlayer();
+                                PlayerId = gameStart.PlayerId;
+                                State = NetGameState.Started;
                             }
-                        }
-                        else if (messageId == MessageId.POINTS_UPDATE)
-                        {
-                            Debug.Log("Received Points Update message");
-                            var pointsUpdate = new PointsUpdate();
-                            pointsUpdate.Read(protocol);
-                            Game.PlayerOne.Points = pointsUpdate.PlayerOneScore;
-                            Game.PlayerTwo.Points = pointsUpdate.PlayerTwoScore;
-                        }
-                        else if (messageId == MessageId.GAME_START)
-                        {
-                            Debug.Log("Received Game Start message");
-                            var gameStart = new GameStart();
-                            gameStart.Read(protocol);
-                            Game.PlayerOne = new LocalPlayer();
-                            Game.PlayerTwo = new LocalPlayer();
-                            PlayerId = gameStart.PlayerId;
-                            GameStarted = true;
-                        }
-                        else if (messageId == MessageId.GAME_OVER)
-                        {
-                            Debug.Log("Received Game Over message");
-                        }
-                        else
-                        {
-                            Debug.LogError("Unsupported message id: " + messageId);
+                            else if (messageId == MessageId.GAME_OVER)
+                            {
+                                Debug.Log("Received Game Over message");
+                                State = NetGameState.Offline;
+                            }
+                            else
+                            {
+                                Debug.LogError("Unsupported message id: " + messageId);
+                            }
                         }
                     }
+                }
+                else
+                {
+                    Debug.LogWarning("Lost packet");
                 }
             }
         }
 
-        if (GameStarted)
+        if (State == NetGameState.Started)
         {
-            var paddlePosition = new EntityPosition();
-            if (PlayerId == 1)
+            if (Move)
             {
-                paddlePosition.Name = PLAYER_ONE;
-                paddlePosition.PositionX = Game.LeftPaddle.Position.X;
-                paddlePosition.PositionY = Game.LeftPaddle.Position.Y;
-            }
-            else
-            {
-                paddlePosition.Name = PLAYER_TWO;
-                paddlePosition.PositionX = Game.RightPaddle.Position.X;
-                paddlePosition.PositionY = Game.RightPaddle.Position.Y;
-            }
+                Move = false;
+                if (PlayerId == 1)
+                {
+                    SendPaddlePosition(Game.LeftPaddle, PLAYER_ONE);
+                }
+                else
+                {
+                    SendPaddlePosition(Game.RightPaddle, PLAYER_TWO);
+                }
 
-            Queue.Add(MessageId.ENTITY_POSITION, paddlePosition);
-            byte[] raw = Queue.BuildPacket();
-            Client.GetStream().Write(raw, 0, raw.Length);
+                byte[] raw = Queue.BuildPacket();
+                Debug.Log("Writing " + BitConverter.ToString(raw).Replace("-", string.Empty));
+                Client.GetStream().Write(raw, 0, raw.Length);
+            }
+            
         }
 
     }

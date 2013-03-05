@@ -62,33 +62,33 @@ public static class AutoBuilder {
 	static void PerformWinBuild ()
 	{
 		EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTarget.StandaloneWindows);
-		BuildPipeline.BuildPlayer(GetScenePaths(), "Bin/" + GetProjectName() + ".exe",BuildTarget.StandaloneWindows,BuildOptions.None);
+		BuildPipeline.BuildPlayer(GetScenePaths(), "Bin/" + GetProjectName() + ".exe",BuildTarget.StandaloneWindows,BuildOptions.Development);
 	}
  
 	[MenuItem("File/AutoBuilder/Windows/64-bit")]
 	static void PerformWin64Build ()
 	{
 		EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTarget.StandaloneWindows);
-        BuildPipeline.BuildPlayer(GetScenePaths(), "Bin/" + GetProjectName() + ".exe", BuildTarget.StandaloneWindows64, BuildOptions.None);
+        BuildPipeline.BuildPlayer(GetScenePaths(), "Bin/" + GetProjectName() + ".exe", BuildTarget.StandaloneWindows64, BuildOptions.Development);
 	}
  
 	[MenuItem("File/AutoBuilder/iOS")]
 	static void PerformiOSBuild ()
 	{
 		EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTarget.iPhone);
-        BuildPipeline.BuildPlayer(GetScenePaths(), "Bin/" + GetProjectName(), BuildTarget.iPhone, BuildOptions.AcceptExternalModificationsToPlayer);
+        BuildPipeline.BuildPlayer(GetScenePaths(), "Bin/" + GetProjectName(), BuildTarget.iPhone, BuildOptions.AllowDebugging & BuildOptions.Development & BuildOptions.ShowBuiltPlayer);
 	}
 	[MenuItem("File/AutoBuilder/Android")]
 	static void PerformAndroidBuild ()
 	{
 		EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTarget.Android);
-        BuildPipeline.BuildPlayer(GetScenePaths(), "Bin/" + GetProjectName() + ".apk", BuildTarget.Android, BuildOptions.None);
+        BuildPipeline.BuildPlayer(GetScenePaths(), "Bin/" + GetProjectName() + ".apk", BuildTarget.Android, BuildOptions.Development);
 	}
 	[MenuItem("File/AutoBuilder/Web/Standard")]
 	static void PerformWebBuild ()
 	{
 		EditorUserBuildSettings.SwitchActiveBuildTarget(BuildTarget.WebPlayer);
-        BuildPipeline.BuildPlayer(GetScenePaths(), "Bin/" + GetProjectName(), BuildTarget.WebPlayer, BuildOptions.None);
+        BuildPipeline.BuildPlayer(GetScenePaths(), "Bin/" + GetProjectName(), BuildTarget.WebPlayer, BuildOptions.Development);
 	}
 	[MenuItem("File/AutoBuilder/Web/Streamed")]
 	static void PerformWebStreamedBuild ()

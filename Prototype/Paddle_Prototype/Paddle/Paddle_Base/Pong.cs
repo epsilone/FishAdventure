@@ -90,7 +90,7 @@ namespace Paddle
             }
             else if (Ball.Position.X < LEFT_GOAL)
             {
-                //PlayerTwo.Points++;
+                PlayerTwo.Points++;
                 Ball.Position = Vector2.Zero;
             }
 

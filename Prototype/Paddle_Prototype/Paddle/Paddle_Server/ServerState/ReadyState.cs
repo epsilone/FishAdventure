@@ -20,6 +20,7 @@ namespace PaddleServer.ServerState
         public void OnEnter()
         {
             Context.Server.ClientConnected += OnClientConnected;
+            Context.Players.Clear();
             Context.Server.Start();
         }
 

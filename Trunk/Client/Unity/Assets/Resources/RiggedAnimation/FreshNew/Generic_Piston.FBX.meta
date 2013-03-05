@@ -1,5 +1,5 @@
 fileFormatVersion: 2
-guid: b3dcb472e8470864dae1f95c47e0540f
+guid: 1b8e728e5deef5845adc89323918add1
 ModelImporter:
   serializedVersion: 15
   fileIDToRecycleName:
@@ -14,13 +14,7 @@ ModelImporter:
     400006: Bone04
     400008: //RootNode
     7400000: Take 001
-    7400002: Take 001 //// Bone01
     9500000: //RootNode
-    11100000: //RootNode
-    11100002: Bone01
-    11100004: Bone02
-    11100006: Bone03
-    11100008: Bone04
   materials:
     importMaterials: 1
     materialName: 0
@@ -33,11 +27,33 @@ ModelImporter:
     animationPositionError: .5
     animationScaleError: .5
     animationWrapMode: 0
-    clipAnimations: []
+    clipAnimations:
+    - name: Take 001
+      takeName: Take 001
+      firstFrame: 1
+      lastFrame: 24
+      wrapMode: 0
+      orientationOffsetY: 0
+      level: 0
+      cycleOffset: 0
+      loop: 0
+      loopBlend: 1
+      loopBlendOrientation: 0
+      loopBlendPositionY: 0
+      loopBlendPositionXZ: 0
+      keepOriginalOrientation: 0
+      keepOriginalPositionY: 1
+      keepOriginalPositionXZ: 0
+      heightFromFeet: 0
+      mirror: 0
+      keepAdditionalBonesAnimation: 1
+      bodyMask: 01000000010000000100000001000000010000000100000001000000010000000100000001000000010000000100000001000000
+      curves: []
+      skeletonMaskElements: []
     isReadable: 1
   meshes:
     lODScreenPercentages: []
-    globalScale: .180000007
+    globalScale: 1
     meshCompression: 0
     addColliders: 0
     swapUVChannels: 0
@@ -66,8 +82,8 @@ ModelImporter:
     armStretch: .0500000007
     legStretch: .0500000007
     feetSpacing: 0
-    rootMotionBoneName: 
+    rootMotionBoneName: Bone04
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   additionalBone: 1
-  animationType: 1
+  animationType: 2
   userData: 

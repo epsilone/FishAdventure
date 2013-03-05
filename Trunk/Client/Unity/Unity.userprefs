@@ -1,16 +1,6 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Com\Funcom\FishAdventure\UI\Prototype\AnimationMenu.cs">
-    <Files>
-      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\Util\GenericUtil.cs" Line="240" Column="3" />
-      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\UI\Prototype\XMLReaderMenu.cs" Line="17" Column="28" />
-      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\UI\Prototype\PrototypeMainMenu.cs" Line="32" Column="3" />
-      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\UI\Prototype\AIMenu.cs" Line="7" Column="59" />
-      <File FileName="Assets\Scripts\Com\Funcom\Reference\ScreenDebug.cs" Line="22" Column="65" />
-      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\UI\Prototype\AnimationMenu.cs" Line="40" Column="31" />
-      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\UI\Prototype\CustomizationMenu.cs" Line="16" Column="1" />
-    </Files>
-  </MonoDevelop.Ide.Workbench>
+  <MonoDevelop.Ide.Workbench />
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>
