@@ -1,5 +1,7 @@
 using com.funcom.legoxmlreader;
 using UnityEngine;
+using System;
+using System.Collections;
 
 public class AnimationMenu:MonoBehaviour 
 {
@@ -9,18 +11,22 @@ public class AnimationMenu:MonoBehaviour
 	private GameObject CustomMesh;
 	private GameObject CustomMeshProcSkinning;
 	private GameObject SkinningPrefab;
+	private GameObject SkinningPrefabProcAnim;
+	
+	
+	Transform[] bonesRef;
 	
 	private int currentState = -1;
 	
-	private const int NUMBER_OF_BUTTON = 5;
-	private const float BTN_WIDTH = 200.0f;
+	private const int NUMBER_OF_BUTTON = 6;
+	private const float BTN_WIDTH = 250.0f;
 	private const float BTN_HEIGHT = 60.0f;
 	
 	void Start()
 	{
 		PreSkinnedMesh = GameObject.Find("PreSkinned_Mesh");
 		PreSkinnedMesh.AddComponent("ViewDrag");
-		//PreSkinnedMesh.SetActive(false);
+		PreSkinnedMesh.SetActive(false);
 		
 		CustomMesh = GameObject.Find("Custom_Mesh");
 		CustomMesh.AddComponent("ViewDrag");
@@ -33,6 +39,10 @@ public class AnimationMenu:MonoBehaviour
 		SkinningPrefab = GameObject.Find("SkinningPrefab");
 		SkinningPrefab.AddComponent("ViewDrag");
 		SkinningPrefab.SetActive(false);
+		
+		SkinningPrefabProcAnim = GameObject.Find("SkinningPrefabProcAnim");
+		SkinningPrefabProcAnim.AddComponent("ViewDrag");
+		SkinningPrefabProcAnim.SetActive(false);
 	}
 	
 	void OnGUI()
@@ -47,7 +57,7 @@ public class AnimationMenu:MonoBehaviour
 			PreSkinnedMesh.SetActive(true);
 		}
 		
-		if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 1) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"100% Procedural animation\n(Not optimized)"))
+		if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 1) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"[Procedural Animation]\nNo Skinning (Invoke)"))
 		{
 			if(ChangeState(2) == false) {return;}
 			
@@ -56,7 +66,7 @@ public class AnimationMenu:MonoBehaviour
 			Fish.AddComponent("ProceduralSwimAnimation");
 			Fish.AddComponent("ViewDrag");
 		}
-		if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 2) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"[Legacy]\nProcedural Skinning"))
+		if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 2) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"[Legacy]\nProcedural Skinning (Invoke)"))
 		{
 			if(ChangeState(3) == false) {return;}
 			
@@ -74,7 +84,7 @@ public class AnimationMenu:MonoBehaviour
 			Fish.animation.wrapMode = WrapMode.Loop;
 		    Fish.animation.Play("swim");
 		}
-		if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 3) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"[Mecanim Generic]\n No Skinning"))
+		if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 3) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"[Mecanim Generic]\n No Skinning (GameObject)"))
 		{
 			if(ChangeState(4) == false) {return;}
 			
@@ -93,7 +103,7 @@ public class AnimationMenu:MonoBehaviour
 			Destroy(Fish);
 			
 		}
-		if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 4) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"[Mecanim Generic]\n Procedural Skinning"))
+		if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 4) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"[Mecanim Generic]\n Procedural Skinning (Invoke)"))
 		{
 			if(ChangeState(5) == false) {return;}
 			
@@ -125,7 +135,7 @@ public class AnimationMenu:MonoBehaviour
 			Fish.transform.parent = CustomMeshProcSkinning.transform;
 			
 		}
-		if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 5) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"[Mecanim Generic]\nProcedural Skinning on Prefab"))
+		if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 5) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"[Legacy]\nProcedural Skinning (GameObject)"))
 		{
 			if(ChangeState(6) == false) {return;}
 			
@@ -133,6 +143,14 @@ public class AnimationMenu:MonoBehaviour
 			
 			SkinningPrefab.SetActive(true);
 			
+			//Set var
+			SkinnedMeshRenderer skinnedMeshRenderer;
+			Matrix4x4 matrixBuffer;
+			Vector3 size;
+		    Transform[] bonesRefList = new Transform[4];
+		    Matrix4x4[] bindPoses = new Matrix4x4[4];
+			
+			//Move fish object to prefab
 			Transform[] allChildren = Fish.GetComponentsInChildren<Transform>();
 			foreach (Transform child in allChildren) 
 			{
@@ -142,36 +160,165 @@ public class AnimationMenu:MonoBehaviour
 				}
 			}
 			
+			//Destroy fish
 			Destroy(Fish);
 			
+			//Combine children mesh to parent (Skinning mode)
 			GenericUtil.CombineChildMeshesToSkin(SkinningPrefab);
+			skinnedMeshRenderer = SkinningPrefab.GetComponent<SkinnedMeshRenderer>();
 			
-			SkinnedMeshRenderer skinnedMeshRenderer = SkinningPrefab.GetComponent<SkinnedMeshRenderer>();
+			//Get size
+			size = skinnedMeshRenderer.sharedMesh.bounds.size;
 			
-			//BONES CREATION
-		    Transform[] bones = new Transform[4];
-		    Matrix4x4[] bindPoses = new Matrix4x4[4];
+			//Get bones
+			bonesRefList[0] = SkinningPrefab.transform.Find("Bone01").transform;
+			bonesRefList[1] = bonesRefList[0].FindChild("Bone02").transform;
+			bonesRefList[2] = bonesRefList[1].FindChild("Bone03").transform;
+			bonesRefList[3] = bonesRefList[2].FindChild("Bone04").transform;
 			
-		    bones[0] = SkinningPrefab.transform.Find("Bone01").transform;
-			bindPoses[0] = CustomMeshProcSkinning.transform.worldToLocalMatrix;
-			bones[1] = bones[0].FindChild("Bone02").transform;
-			bindPoses[1] = bones[0].transform.worldToLocalMatrix;
-			bones[2] = bones[1].FindChild("Bone03").transform;
-			bindPoses[2] = bones[1].transform.worldToLocalMatrix;
-			bones[3] = bones[2].FindChild("Bone04").transform;
-			bindPoses[3] = bones[2].transform.worldToLocalMatrix;
-		
-		    skinnedMeshRenderer.sharedMesh.bindposes = bindPoses;
-		    skinnedMeshRenderer.bones = bones;
-			skinnedMeshRenderer.rootBone = bones[0];
+			//Move bones
+			bonesRefList[0].position = new Vector3(-(size.x * 0.5f), size.y * 0.5f, 0);
+			bonesRefList[1].position = bonesRefList[0].position + new Vector3(3.6f,0,0);
+			bonesRefList[2].position = bonesRefList[1].position + new Vector3(3.6f,0,0);
+			bonesRefList[3].position = bonesRefList[2].position + new Vector3(3.6f,0,0);
 			
-			GenericUtil.SkinIt(SkinningPrefab, 0.15f);
+			//test 1
+			/*bindPoses[0] = bonesRef[0].localToWorldMatrix;
+			bindPoses[1] = bonesRef[1].localToWorldMatrix;
+			bindPoses[2] = bonesRef[2].localToWorldMatrix;
+			bindPoses[3] = bonesRef[3].localToWorldMatrix;*/
+			
+			//test 2
+			/*bindPoses[0] = Matrix4x4.identity;
+			bindPoses[1] = Matrix4x4.identity;
+			bindPoses[2] = Matrix4x4.identity;
+			bindPoses[3] = Matrix4x4.identity;*/
+			
+			//test 3
+			bindPoses[0] = bonesRefList[0].worldToLocalMatrix;
+			bindPoses[1] = bonesRefList[1].worldToLocalMatrix;
+			bindPoses[2] = bonesRefList[2].worldToLocalMatrix;
+			bindPoses[3] = bonesRefList[3].worldToLocalMatrix;
+			
+			//Test 4
+			/*bindPoses[0] = Matrix4x4.identity;
+			bindPoses[0].SetColumn(3, new Vector4(x,y,0f,1f));
+			bindPoses[1] = Matrix4x4.identity;
+			bindPoses[1].SetColumn(3, new Vector4(3.6f,0f,0f,1f));
+			bindPoses[2] = Matrix4x4.identity;
+			bindPoses[2].SetColumn(3, new Vector4(3.6f,0f,0f,1f));
+			bindPoses[3] = Matrix4x4.identity;
+			bindPoses[3].SetColumn(3, new Vector4(3.6f,0f,0f,1f));*/
+			
+			//Populate bones info
+			skinnedMeshRenderer.sharedMesh.bindposes = bindPoses;
+		    skinnedMeshRenderer.bones = bonesRefList;
+			skinnedMeshRenderer.rootBone = bonesRefList[0];
+			
+			//Skinning
+			GenericUtil.SkinIt(SkinningPrefab, 0f);
 			
 			//Animation
 			SkinningPrefab.animation.wrapMode = WrapMode.Loop;
 			SkinningPrefab.animation.Play("swim");
 		}
-		
+		if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 6) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"[Procedural Animation]\nProcedural Skinning (GameObject)"))
+		{
+			if(ChangeState(7) == false) {return;}
+			
+			InvokeFish("redmariofish");
+			
+			SkinningPrefabProcAnim.SetActive(true);
+			
+			//Set var
+			SkinnedMeshRenderer skinnedMeshRenderer;
+			Vector3 size;
+		    bonesRef = new Transform[4];
+		    Matrix4x4[] bindPoses = new Matrix4x4[4];
+			
+			//Move fish object to prefab
+			Transform[] allChildren = Fish.GetComponentsInChildren<Transform>();
+			foreach (Transform child in allChildren) 
+			{
+				if(child.parent == Fish.transform)
+				{
+					child.parent = SkinningPrefabProcAnim.transform;
+				}
+			}
+			
+			//Destroy fish
+			Destroy(Fish);
+			
+			//Combine children mesh to parent (Skinning mode)
+			GenericUtil.CombineChildMeshesToSkin(SkinningPrefabProcAnim);
+			skinnedMeshRenderer = SkinningPrefabProcAnim.GetComponent<SkinnedMeshRenderer>();
+			
+			//Get size
+			size = skinnedMeshRenderer.sharedMesh.bounds.size;
+			
+			//Get bones
+			bonesRef[0] = SkinningPrefabProcAnim.transform.Find("Bone01").transform;
+			bonesRef[1] = bonesRef[0].FindChild("Bone02").transform;
+			bonesRef[2] = bonesRef[1].FindChild("Bone03").transform;
+			bonesRef[3] = bonesRef[2].FindChild("Bone04").transform;
+			
+			//Move bones
+			bonesRef[0].position = new Vector3(-(size.x / 2f) + ((size.x / 3f) * 0), size.y / 2f, 0f);
+			bonesRef[1].position = new Vector3(-(size.x / 2f) + ((size.x / 3f) * 1), size.y / 2f, 0f);
+			bonesRef[2].position = new Vector3(-(size.x / 2f) + ((size.x / 3f) * 2), size.y / 2f, 0f);
+			bonesRef[3].position = new Vector3(-(size.x / 2f) + ((size.x / 3f) * 3), size.y / 2f, 0f);
+			
+			//BindPoses
+			bindPoses[0] = bonesRef[0].worldToLocalMatrix;
+			bindPoses[1] = bonesRef[1].worldToLocalMatrix;
+			bindPoses[2] = bonesRef[2].worldToLocalMatrix;
+			bindPoses[3] = bonesRef[3].worldToLocalMatrix;
+			
+			//Populate bones info
+			skinnedMeshRenderer.sharedMesh.bindposes = bindPoses;
+		    skinnedMeshRenderer.bones = bonesRef;
+			skinnedMeshRenderer.rootBone = bonesRef[0];
+			
+			//Skinning
+			GenericUtil.SkinIt(SkinningPrefabProcAnim, 0f);
+			
+			//Procedural animation
+			Debug.Log("Start");
+			Hashtable hastTable = new Hashtable();
+			hastTable.Add("amount", new Vector3(0f,0.03f,0f));
+			hastTable.Add("time", 1f);
+			hastTable.Add("easetype", EaseType.easeInBack);
+			hastTable.Add("delay", 1f);
+			
+			iTween.RotateBy(bonesRef[0].gameObject, hastTable);
+			iTween.RotateBy(bonesRef[1].gameObject, hastTable);
+			iTween.RotateBy(bonesRef[2].gameObject, hastTable);
+			iTween.RotateBy(bonesRef[3].gameObject, hastTable);
+			
+			
+			hastTable = new Hashtable();
+			hastTable.Add("amount", new Vector3(0f,-0.06f,0f));
+			hastTable.Add("time", 2f);
+			hastTable.Add("easetype", EaseType.easeInBack);
+			hastTable.Add("delay", 2f);
+			
+			iTween.RotateBy(bonesRef[0].gameObject, hastTable);
+			iTween.RotateBy(bonesRef[1].gameObject, hastTable);
+			iTween.RotateBy(bonesRef[2].gameObject, hastTable);
+			iTween.RotateBy(bonesRef[3].gameObject, hastTable);
+			
+			
+			hastTable = new Hashtable();
+			hastTable.Add("amount", new Vector3(0f,0.06f,0f));
+			hastTable.Add("time", 2f);
+			hastTable.Add("easetype", EaseType.easeInBack);
+			hastTable.Add("delay", 4f);
+			
+			iTween.RotateBy(bonesRef[0].gameObject, hastTable);
+			iTween.RotateBy(bonesRef[1].gameObject, hastTable);
+			iTween.RotateBy(bonesRef[2].gameObject, hastTable);
+			iTween.RotateBy(bonesRef[3].gameObject, hastTable);
+		}
 		
 		
 		if (GUI.Button(new Rect(0,Screen.height - 40 , 100, 40),"Main Menu"))
@@ -179,6 +326,34 @@ public class AnimationMenu:MonoBehaviour
 			Debug.Log("GoTo: PrototypeMainMenu");
 			Application.LoadLevel("PrototypeMainMenu");
 		}
+	}
+	
+	public void segmentOneCompleted()
+	{
+		Hashtable hastTable = new Hashtable();
+		hastTable.Add("amount", new Vector3(0f,-0.06f,0f));
+		hastTable.Add("time", 10f);
+		hastTable.Add("easetype", EaseType.linear);
+		hastTable.Add("oncomplete", "segmentTwoCompleted");
+		
+		iTween.RotateBy(bonesRef[0].gameObject, hastTable);
+		iTween.RotateBy(bonesRef[1].gameObject, hastTable);
+		iTween.RotateBy(bonesRef[2].gameObject, hastTable);
+		iTween.RotateBy(bonesRef[3].gameObject, hastTable);
+	}
+	
+	public void segmentTwoCompleted()
+	{
+		Hashtable hastTable = new Hashtable();
+		hastTable.Add("amount", new Vector3(0f,0.06f,0f));
+		hastTable.Add("time", 10f);
+		hastTable.Add("easetype", EaseType.linear);
+		hastTable.Add("oncomplete", "segmentOneCompleted");
+		
+		iTween.RotateBy(bonesRef[0].gameObject, hastTable);
+		iTween.RotateBy(bonesRef[1].gameObject, hastTable);
+		iTween.RotateBy(bonesRef[2].gameObject, hastTable);
+		iTween.RotateBy(bonesRef[3].gameObject, hastTable);
 	}
 	
 	private bool ChangeState(int stateId)
@@ -207,7 +382,7 @@ public class AnimationMenu:MonoBehaviour
 		{
 			Destroy(Fish);
 		}
-		//PreSkinnedMesh.SetActive(false);
+		PreSkinnedMesh.SetActive(false);
 		
 		
 		Transform[] allChildren = CustomMesh.GetComponentsInChildren<Transform>();
@@ -220,8 +395,6 @@ public class AnimationMenu:MonoBehaviour
 			}
 		}
 		CustomMesh.SetActive(false);
-		
-		
 		
 		CustomMeshProcSkinning.SetActive(false);
 		
@@ -236,8 +409,20 @@ public class AnimationMenu:MonoBehaviour
 		}
 		
 		Destroy(SkinningPrefab.GetComponent<SkinnedMeshRenderer>());
-		
 		SkinningPrefab.SetActive(false);
-	}
+		
+		Transform[] allChildren3 = SkinningPrefabProcAnim.GetComponentsInChildren<Transform>();
+		foreach (Transform child in allChildren3) 
+		{
+			if(child.parent == SkinningPrefabProcAnim.transform && child.name != "Bone01")
+			{
+				Debug.Log("Destroyed");
+				Destroy(child.gameObject);
+			}
+		}
+		
+		Destroy(SkinningPrefabProcAnim.GetComponent<SkinnedMeshRenderer>());
+		SkinningPrefabProcAnim.SetActive(false);
+	}		
 }
 

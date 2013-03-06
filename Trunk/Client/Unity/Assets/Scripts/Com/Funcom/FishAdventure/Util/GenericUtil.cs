@@ -284,10 +284,10 @@ public static class GenericUtil
 			//Calculate weight for each bone
 			for(int boneWeightIndex = 0; boneWeightIndex < boneWeightByVertice.Count; boneWeightIndex++)
 			{
-				if((verticeIndex % 80) == 0)
+				/*if((verticeIndex % 80) == 0)
 				{
 					Debug.Log("[ DEBUG ][Distance] - VertexId=" + verticeIndex +  " / BoneId=" + boneWeightByVertice[boneWeightIndex].x + " / Distance=" + boneWeightByVertice[boneWeightIndex].y);
-				}
+				}*/
 				
 				weightBuffer =  (distanceCumulative - boneWeightByVertice[boneWeightIndex].y);
 				weightBuffer = (weightBuffer / (boneWeightByVertice.Count - 1));
@@ -295,15 +295,15 @@ public static class GenericUtil
 				boneWeightByVertice[boneWeightIndex] = new Vector2(boneWeightByVertice[boneWeightIndex].x, weightBuffer);
 			}
 			
-			boneWeightList[verticeIndex] = GetBoneWeightByVerticeInfo(boneWeightByVertice, minimalBoneWeight);
+			boneWeightList[verticeIndex] = GetBoneWeightByVerticeInfo(boneWeightByVertice, minimalBoneWeight, 2);
 			
-			if((verticeIndex % 80) == 0)
+			/*if((verticeIndex % 80) == 0)
 			{
 				foreach(Vector2 vec in boneWeightByVertice)
 				{
 					Debug.Log("[ DEBUG ][Weight] VertexId=" + verticeIndex +  "/ vPos=" + verticeBuffer + " / BoneId=" + vec.x + " / Weight=" + vec.y);
 				}
-			}
+			}*/
 		}
 		
 		skinnedMeshRenderer.sharedMesh.boneWeights = boneWeightList;
@@ -340,17 +340,17 @@ public static class GenericUtil
 		skinnedMeshRenderer.sharedMesh.vertices = newVerticeList;
 	}
 	
-	private static BoneWeight GetBoneWeightByVerticeInfo(List<Vector2> boneWeightByVertice, float minimalBoneWeight)
+	private static BoneWeight GetBoneWeightByVerticeInfo(List<Vector2> boneWeightByVertice, float minimalBoneWeight, int maxBoneCount)
 	{
 		BoneWeight boneWeight = new BoneWeight();
 		float newMaxWeight = 0.0f;
 		
 		//Sort
 		boneWeightByVertice.Sort((x, y) => x.y.CompareTo(y.y));
-		boneWeightByVertice.RemoveRange(0,2);
+		boneWeightByVertice.RemoveRange(0,boneWeightByVertice.Count - maxBoneCount);
 		
 		//Remove weight under the minimum limit
-		//boneWeightByVertice.RemoveAll(x => x.y < minimalBoneWeight);
+		boneWeightByVertice.RemoveAll(x => x.y < minimalBoneWeight);
 		
 		//Recalibrate weight
 		for(int i = 0; i < boneWeightByVertice.Count; i++)
