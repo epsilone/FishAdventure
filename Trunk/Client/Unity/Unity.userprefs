@@ -1,8 +1,7 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Com\Funcom\FishAdventure\UI\Prototype\AnimationMenu.cs">
+  <MonoDevelop.Ide.Workbench ActiveDocument="Assets\Scripts\Com\Funcom\FishAdventure\Util\GenericUtil.cs">
     <Files>
-      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\UI\Prototype\AnimationMenu.cs" Line="137" Column="31" />
       <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\Util\GenericUtil.cs" Line="284" Column="36" />
       <File FileName="Assets\Editor\AutoBuilder.cs" Line="84" Column="72" />
     </Files>
