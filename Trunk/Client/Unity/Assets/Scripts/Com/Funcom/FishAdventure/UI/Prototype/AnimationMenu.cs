@@ -5,6 +5,7 @@ using System.Collections;
 
 public class AnimationMenu:MonoBehaviour 
 {
+	public GameObject rig;
 	public AnimationClip swimAnimation;
 	private GameObject Fish;
 	private GameObject PreSkinnedMesh;
@@ -177,38 +178,24 @@ public class AnimationMenu:MonoBehaviour
 			bonesRefList[3] = bonesRefList[2].FindChild("Bone04").transform;
 			
 			//Move bones
-			bonesRefList[0].position = new Vector3(-(size.x * 0.5f), size.y * 0.5f, 0);
+			bonesRefList[0].position = new Vector3((size.x * 0.5f), size.y * 0.5f, 0);
+			bonesRefList[1].position = bonesRefList[0].position - new Vector3(3.6f,0,0);
+			bonesRefList[2].position = bonesRefList[1].position - new Vector3(3.6f,0,0);
+			bonesRefList[3].position = bonesRefList[2].position - new Vector3(3.6f,0,0);
+			
+			/*bonesRefList[0].position = new Vector3(-(size.x * 0.5f), size.y * 0.5f, 0);
 			bonesRefList[1].position = bonesRefList[0].position + new Vector3(3.6f,0,0);
 			bonesRefList[2].position = bonesRefList[1].position + new Vector3(3.6f,0,0);
-			bonesRefList[3].position = bonesRefList[2].position + new Vector3(3.6f,0,0);
+			bonesRefList[3].position = bonesRefList[2].position + new Vector3(3.6f,0,0);*/
 			
-			//test 1
-			/*bindPoses[0] = bonesRef[0].localToWorldMatrix;
-			bindPoses[1] = bonesRef[1].localToWorldMatrix;
-			bindPoses[2] = bonesRef[2].localToWorldMatrix;
-			bindPoses[3] = bonesRef[3].localToWorldMatrix;*/
-			
-			//test 2
-			/*bindPoses[0] = Matrix4x4.identity;
-			bindPoses[1] = Matrix4x4.identity;
-			bindPoses[2] = Matrix4x4.identity;
-			bindPoses[3] = Matrix4x4.identity;*/
+			//Bones rotation (HACK)
+			bonesRefList[0].localEulerAngles = new Vector3(-90f,0f,0f);
 			
 			//test 3
 			bindPoses[0] = bonesRefList[0].worldToLocalMatrix;
 			bindPoses[1] = bonesRefList[1].worldToLocalMatrix;
 			bindPoses[2] = bonesRefList[2].worldToLocalMatrix;
 			bindPoses[3] = bonesRefList[3].worldToLocalMatrix;
-			
-			//Test 4
-			/*bindPoses[0] = Matrix4x4.identity;
-			bindPoses[0].SetColumn(3, new Vector4(x,y,0f,1f));
-			bindPoses[1] = Matrix4x4.identity;
-			bindPoses[1].SetColumn(3, new Vector4(3.6f,0f,0f,1f));
-			bindPoses[2] = Matrix4x4.identity;
-			bindPoses[2].SetColumn(3, new Vector4(3.6f,0f,0f,1f));
-			bindPoses[3] = Matrix4x4.identity;
-			bindPoses[3].SetColumn(3, new Vector4(3.6f,0f,0f,1f));*/
 			
 			//Populate bones info
 			skinnedMeshRenderer.sharedMesh.bindposes = bindPoses;
@@ -423,6 +410,20 @@ public class AnimationMenu:MonoBehaviour
 		
 		Destroy(SkinningPrefabProcAnim.GetComponent<SkinnedMeshRenderer>());
 		SkinningPrefabProcAnim.SetActive(false);
-	}		
+	}	
+	
+	void Update()
+	{
+		if(SkinningPrefab != null)
+		{
+			SkinnedMeshRenderer skinnedMeshRenderer = SkinningPrefab.GetComponent<SkinnedMeshRenderer>();
+			if(skinnedMeshRenderer != null)
+			{
+				//Debug.Log(skinnedMeshRenderer.sharedMesh.bindposes[0]);
+				//Debug.Log(skinnedMeshRenderer.bones[0].localToWorldMatrix);
+			}
+		}
+		
+	}
 }
 
