@@ -13,7 +13,7 @@ public class XMLReaderMenu:MonoBehaviour
 		
 		if (GUI.Button(new Rect(Screen.width-200,((Screen.height / (NUMBER_OF_BUTTON + 1)) * 1) - 30,200,60),"Mario"))
 		{
-			InvokeFish("redmariofish");
+			InvokeFish("hero_fish");
 		}
 		
 		if (GUI.Button(new Rect(Screen.width-200,((Screen.height / (NUMBER_OF_BUTTON + 1)) * 2) - 30,200,60),"Fish"))

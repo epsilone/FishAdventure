@@ -1,34 +1,29 @@
 fileFormatVersion: 2
-guid: 01939e7515c821b44a894d7eddf2e6a2
+guid: 7be7d6c0d0245ed44afcd7cedc98df65
 ModelImporter:
   serializedVersion: 15
   fileIDToRecycleName:
     100000: //RootNode
     100002: Material_0
-    100004: Decoration_1
-    100006: Material_1
+    100004: Slope_Brick_45__2_x__1_Inverted__002
     400000: //RootNode
     400002: Material_0
-    400004: Decoration_1
-    400006: Material_1
-    2300000: Material_0
-    2300002: Decoration_1
-    2300004: Material_1
-    2300006: //RootNode
-    3300000: Material_0
-    3300002: Decoration_1
-    3300004: Material_1
-    3300006: //RootNode
-    4300000: Material_1
-    4300002: Decoration_1
-    4300004: Material_0
-    11100000: //RootNode
+    400004: Slope_Brick_45__2_x__1_Inverted__002
+    2300000: //RootNode
+    2300002: Material_0
+    2300004: Slope_Brick_45__2_x__1_Inverted__002
+    3300000: //RootNode
+    3300002: Material_0
+    3300004: Slope_Brick_45__2_x__1_Inverted__002
+    4300000: Slope_Brick_45__2_x__1_Inverted__002
+    4300002: Material_0
+    9500000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
   animations:
-    legacyGenerateAnimations: 3
+    legacyGenerateAnimations: 4
     bakeSimulation: 0
     animationCompression: 1
     animationRotationError: .5
@@ -55,7 +50,7 @@ ModelImporter:
     splitTangentsAcrossUV: 1
     normalImportMode: 0
     tangentImportMode: 1
-  importAnimation: 1
+  importAnimation: 0
   copyAvatar: 0
   humanDescription:
     human: []
@@ -71,5 +66,5 @@ ModelImporter:
     rootMotionBoneName: 
   lastHumanDescriptionAvatarSource: {instanceID: 0}
   additionalBone: 1
-  animationType: 1
+  animationType: 0
   userData: 

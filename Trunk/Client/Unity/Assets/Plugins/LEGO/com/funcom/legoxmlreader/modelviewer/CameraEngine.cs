@@ -184,7 +184,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             cameraLerp = true;
             changed = true;
 
-            while (!ApproximatePositions(mainCamera.transform.position, viewingPosition))
+            while (!ApproximatePositions(mainCamera.transform.position, viewingPosition,0.01f))
             {
                 mainCamera.transform.position = Vector3.Slerp(mainCamera.transform.position, viewingPosition, Time.deltaTime * 3);
                 mainCamera.transform.LookAt(focusPoint);
@@ -193,7 +193,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             cameraLerp = false;
         }
 
-        private bool ApproximatePositions(Vector3 vectorOne, Vector3 vectorTwo, float percentageDifferenceAllowed = 0.01f)
+        private bool ApproximatePositions(Vector3 vectorOne, Vector3 vectorTwo, float percentageDifferenceAllowed)
         {
             return (vectorOne - vectorTwo).sqrMagnitude <= (vectorOne * percentageDifferenceAllowed).sqrMagnitude;
         }

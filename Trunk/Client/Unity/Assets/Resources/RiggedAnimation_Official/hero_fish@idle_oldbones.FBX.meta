@@ -1,34 +1,27 @@
 fileFormatVersion: 2
-guid: 01939e7515c821b44a894d7eddf2e6a2
+guid: 6c596dde7b06601468e30b2e0786f246
 ModelImporter:
   serializedVersion: 15
   fileIDToRecycleName:
-    100000: //RootNode
-    100002: Material_0
-    100004: Decoration_1
-    100006: Material_1
-    400000: //RootNode
-    400002: Material_0
-    400004: Decoration_1
-    400006: Material_1
-    2300000: Material_0
-    2300002: Decoration_1
-    2300004: Material_1
-    2300006: //RootNode
-    3300000: Material_0
-    3300002: Decoration_1
-    3300004: Material_1
-    3300006: //RootNode
-    4300000: Material_1
-    4300002: Decoration_1
-    4300004: Material_0
+    100000: Bone01
+    100002: Bone02
+    100004: Bone03
+    100006: Bone04
+    100008: //RootNode
+    400000: Bone01
+    400002: Bone02
+    400004: Bone03
+    400006: Bone04
+    400008: //RootNode
+    7400000: Take 001
+    9500000: //RootNode
     11100000: //RootNode
   materials:
     importMaterials: 1
     materialName: 0
     materialSearch: 1
   animations:
-    legacyGenerateAnimations: 3
+    legacyGenerateAnimations: 4
     bakeSimulation: 0
     animationCompression: 1
     animationRotationError: .5
