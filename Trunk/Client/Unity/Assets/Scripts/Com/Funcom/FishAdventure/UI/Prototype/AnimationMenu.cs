@@ -77,7 +77,7 @@ public class AnimationMenu:MonoBehaviour
 			GenericUtil.CombineChildMeshesToSkin(Fish);
 			//GenericUtil.Center(Fish);
 			GenericUtil.CreateBones(Fish);
-			GenericUtil.SkinIt(Fish, 0.20f);
+			GenericUtil.SkinIt(Fish, 0.0f);
 			
 			//Animation
 			Fish.AddComponent<Animation>();
@@ -104,7 +104,7 @@ public class AnimationMenu:MonoBehaviour
 			Destroy(Fish);
 			
 		}
-		if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 4) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"[Mecanim Generic]\n Procedural Skinning (Invoke)"))
+		if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 4) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"[Mecanim Generic]\n Procedural Skinning (GameObject)"))
 		{
 			if(ChangeState(5) == false) {return;}
 			
@@ -178,15 +178,15 @@ public class AnimationMenu:MonoBehaviour
 			bonesRefList[3] = bonesRefList[2].FindChild("Bone04").transform;
 			
 			//Move bones
-			bonesRefList[0].position = new Vector3((size.x * 0.5f), size.y * 0.5f, 0);
+			/*bonesRefList[0].position = new Vector3((size.x * 0.5f), size.y * 0.5f, 0);
 			bonesRefList[1].position = bonesRefList[0].position - new Vector3(3.6f,0,0);
 			bonesRefList[2].position = bonesRefList[1].position - new Vector3(3.6f,0,0);
-			bonesRefList[3].position = bonesRefList[2].position - new Vector3(3.6f,0,0);
+			bonesRefList[3].position = bonesRefList[2].position - new Vector3(3.6f,0,0);*/
 			
-			/*bonesRefList[0].position = new Vector3(-(size.x * 0.5f), size.y * 0.5f, 0);
+			bonesRefList[0].position = new Vector3(-(size.x * 0.5f), size.y * 0.5f, 0);
 			bonesRefList[1].position = bonesRefList[0].position + new Vector3(3.6f,0,0);
 			bonesRefList[2].position = bonesRefList[1].position + new Vector3(3.6f,0,0);
-			bonesRefList[3].position = bonesRefList[2].position + new Vector3(3.6f,0,0);*/
+			bonesRefList[3].position = bonesRefList[2].position + new Vector3(3.6f,0,0);
 			
 			//Bones rotation (HACK)
 			bonesRefList[0].localEulerAngles = new Vector3(-90f,0f,0f);

@@ -295,7 +295,7 @@ public static class GenericUtil
 				boneWeightByVertice[boneWeightIndex] = new Vector2(boneWeightByVertice[boneWeightIndex].x, weightBuffer);
 			}
 			
-			boneWeightList[verticeIndex] = GetBoneWeightByVerticeInfo(boneWeightByVertice, minimalBoneWeight, 2);
+			boneWeightList[verticeIndex] = GetBoneWeightByVerticeInfo(boneWeightByVertice, minimalBoneWeight, 1);
 			
 			/*if((verticeIndex % 80) == 0)
 			{
