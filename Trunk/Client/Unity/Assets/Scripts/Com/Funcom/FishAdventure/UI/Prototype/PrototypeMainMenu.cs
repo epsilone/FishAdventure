@@ -40,6 +40,11 @@ public class PrototypeMainMenu:MonoBehaviour
 			Debug.Log("GoTo: Animation");
 			Application.LoadLevel("Animation");
 		}
+		if (GUI.Button(new Rect((float)(Screen.width * 0.5f) - (BTN_WIDTH * 0.5f) + (BTN_WIDTH + 7), (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 2) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"Animation V2"))
+		{
+			Debug.Log("GoTo: AnimationV2");
+			Application.LoadLevel("AnimationV2");
+		}
 		if (GUI.Button(new Rect((float)(Screen.width * 0.5f) - (BTN_WIDTH * 0.5f), (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 3) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"AI"))
 		{
 			Debug.Log("GoTo: AI");
