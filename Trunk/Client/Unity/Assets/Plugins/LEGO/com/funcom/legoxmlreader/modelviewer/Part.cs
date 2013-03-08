@@ -23,10 +23,12 @@ namespace com.funcom.legoxmlreader.modelviewer
         public bool usedInModel; // if used, explode/implode routines use the cloud animations, otherwise out/in scene routines
 
         public enum State { STOP, EXPLODE, IMPLODE };
+
         public State state;
         private float startTime;
         private float duration;
         private Vector3[] trajectory; // set up by model using modelPartDataItems
+
         public Vector3[] Trajectory
         {
             set
@@ -34,6 +36,7 @@ namespace com.funcom.legoxmlreader.modelviewer
                 trajectory = value;
             }
         }
+
         //	private Vector3 [] nextModelTrajectory;
         //	public Vector3[] NextModelTrajectory
         //	{
@@ -41,9 +44,10 @@ namespace com.funcom.legoxmlreader.modelviewer
         //		{
         //			nextModelTrajectory = value;
         //		}
-        //	}	
-        //	
+        //	}
+        //
         private Material transparentMat;
+
         private Dictionary<string, Material> materialMap;
 
         private List<int> decorationIdList;
@@ -73,6 +77,7 @@ namespace com.funcom.legoxmlreader.modelviewer
                 assembledPosition = value;
             }
         }
+
         public Quaternion ExplodedRotation
         {
             get
@@ -129,6 +134,7 @@ namespace com.funcom.legoxmlreader.modelviewer
         }
 
         private bool alreadyInUse = false; // means that during model/part database construction, this part is already in use - reset after loading
+
         public bool AlreadyInUse
         {
             get
@@ -140,7 +146,6 @@ namespace com.funcom.legoxmlreader.modelviewer
                 alreadyInUse = value;
             }
         }
-
 
         public int DesignId
         {
@@ -183,7 +188,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             }
         }
 
-        void Awake()
+        private void Awake()
         {
             currentlyUsingModel = null;
             state = State.STOP;
@@ -194,7 +199,7 @@ namespace com.funcom.legoxmlreader.modelviewer
         //	public void SetupEndState(float duration)
         //	{
         //		this.duration = duration;
-        //		
+        //
         //		endPosition = gameObject.transform.position;
         //		endRotation = gameObject.transform.rotation;
         //	}
@@ -257,7 +262,6 @@ namespace com.funcom.legoxmlreader.modelviewer
                 }
             }
         }
-
 
         //~ void Update()
         //~ {
@@ -384,6 +388,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             r.material = endMat;
             currentlyUsingModel.partsInMaterialLerpCount--;
         }
+
         public void UpdatePart(float time)
         {
             switch (state)
@@ -400,15 +405,17 @@ namespace com.funcom.legoxmlreader.modelviewer
                         if (usedInModel)
                         {	// part used in the model
                             float elapsedTimeFraction = elapsedTime / duration;
+
                             //slerped
                             int positionIndex = Mathf.Clamp(Mathf.RoundToInt(explodeEase(0, trajectory.Length, elapsedTime, duration)), 0, trajectory.Length - 1);
+
                             //gameObject.transform.position = trajectory[(int)Mathf.Clamp(Mathf.Abs(elapsedTimeFraction*trajectory.Length), 0, trajectory.Length-1)];
                             gameObject.transform.position = trajectory[positionIndex];
                             gameObject.transform.rotation = Quaternion.Slerp(assembledRotation, explodedRotation, elapsedTimeFraction);
 
-                            // linear 
+                            // linear
                             // gameObject.transform.position = Vector3.Lerp(assembledPosition, explodedPosition, elapsedTimeFraction);
-                            // gameObject.transform.rotation = Quaternion.Lerp(assembledRotation, explodedRotation,elapsedTimeFraction);				
+                            // gameObject.transform.rotation = Quaternion.Lerp(assembledRotation, explodedRotation,elapsedTimeFraction);
                         }
                         else
                         {	// part in parking above veiwable scene - bring down to cloud
@@ -422,10 +429,12 @@ namespace com.funcom.legoxmlreader.modelviewer
                     {
                         gameObject.transform.position = explodedPosition;
                         gameObject.transform.rotation = explodedRotation;
+
                         //state = State.STOP;
                         state = State.IMPLODE;
                         currentlyUsingModel.partsInFlightCount--;
-                        //				Debug.Log ("Part EXPLODE currentlyUsingModel.partsInFlightCount=" + currentlyUsingModel.partsInFlightCount.ToString());				
+
+                        //				Debug.Log ("Part EXPLODE currentlyUsingModel.partsInFlightCount=" + currentlyUsingModel.partsInFlightCount.ToString());
                     }
                     else if (time < startTime)
                     {
@@ -455,6 +464,7 @@ namespace com.funcom.legoxmlreader.modelviewer
                             int positionIndex = Mathf.Clamp(Mathf.RoundToInt(implodeEase(0, trajectory.Length, elapsedTime, duration)), 0, trajectory.Length - 1);
                             positionIndex = (trajectory.Length - 1) - positionIndex;
                             gameObject.transform.position = trajectory[positionIndex];
+
                             //gameObject.transform.position = trajectory[(int)Mathf.Clamp(Mathf.Abs(elapsedTimeFraction*trajectory.Length), 0, trajectory.Length-1)];
                             //gameObject.transform.position = trajectory[(int)Mathf.Clamp(Mathf.Abs(trajectory.Length - elapsedTimeFraction*trajectory.Length), 0, trajectory.Length-1)];
                             //gameObject.transform.position = Vector3.Slerp(explodedPosition, assembledPosition, elapsedTime);
@@ -489,7 +499,6 @@ namespace com.funcom.legoxmlreader.modelviewer
                         gameObject.transform.rotation = explodedRotation;
                     }
                     break;
-
             }
         }
 
@@ -518,7 +527,7 @@ namespace com.funcom.legoxmlreader.modelviewer
         //		{
         //		case	State.STOP:		return false; break;
         //		case	State.EXPLODE:	return (gameObject.transform.position != explodedPosition || gameObject.transform.rotation != explodedRotation); break;
-        //		case	State.IMPLODE:	return (gameObject.transform.position != assembledPosition || gameObject.transform.rotation != assembledRotation); break;			
+        //		case	State.IMPLODE:	return (gameObject.transform.position != assembledPosition || gameObject.transform.rotation != assembledRotation); break;
         //		default:				return false; break;
         //		}
         //	}
@@ -548,6 +557,7 @@ namespace com.funcom.legoxmlreader.modelviewer
         {
             currentlyUsingModel = pModel;
             usedInModel = false;
+
             //transform.position	= pModelPartData.ExplodedPosition;
             //transform.rotation	= pModelPartData.ExplodedRotation;
             //Hidden(true);
@@ -567,6 +577,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             duration = pDuration;
             state = State.EXPLODE;
         }
+
         public void Implode(float pStartTime, float pDuration)
         {
             startTime = pStartTime;

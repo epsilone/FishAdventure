@@ -1,15 +1,15 @@
-using UnityEngine;
 using System.Collections.Generic;
+using UnityEngine;
 
 namespace com.funcom.legoxmlreader.modelviewer
 {
-    public class Model:MonoBehaviour
+    public class Model : MonoBehaviour
     {
-
         public Interpolate.Function explodeEase; // easing of a particular EaseType
         public Interpolate.Function implodeEase; // easing of a particular EaseType
 
         private Dictionary<PartGroup, Texture2D> groupSnapshots = new Dictionary<PartGroup, Texture2D>();
+
         public Dictionary<PartGroup, Texture2D> GroupSnapshots
         {
             get
@@ -23,8 +23,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         }
 
         private Texture2D wholeModelSnapshot;
-        // setters for the snapshots here....
 
+        // setters for the snapshots here....
 
         public Texture2D WholeModelSnapshot
         {
@@ -47,6 +47,7 @@ namespace com.funcom.legoxmlreader.modelviewer
         }
 
         private Bounds fullModelBounds = new Bounds();
+
         public Bounds FullModelBounds
         {
             get
@@ -55,15 +56,17 @@ namespace com.funcom.legoxmlreader.modelviewer
             }
         }
 
-
         private List<PartGroup> partGroups;
         private List<Part> sceneParts = new List<Part>();
+
         //private List<GameObject> flexContainer;
         private float elapsedTime = 0.0f;
+
         private float duration = 0.0f;
 
         public int partsInFlightCount = 0;
         public int partsInMaterialLerpCount = 0;
+
         public bool IsQuiesent()
         {
             return (partsInFlightCount <= 0 && partsInMaterialLerpCount <= 0);
@@ -74,13 +77,14 @@ namespace com.funcom.legoxmlreader.modelviewer
         private Dictionary<Part, ModelPartDataItem> modelPartData = new Dictionary<Part, ModelPartDataItem>();
         private Dictionary<Part, ModelPartDataItem> notInModelPartData = new Dictionary<Part, ModelPartDataItem>();
 
-        void Awake()
+        private void Awake()
         {
             //assembledModelData = new Dictionary<Part, ModelPartDataItem>();
             //sceneParts = new List<Part>();
             //flexContainer = new List<GameObject>();
         }
-        void Start()
+
+        private void Start()
         {
         }
 
@@ -106,7 +110,6 @@ namespace com.funcom.legoxmlreader.modelviewer
         {
             return wholeModelSnapshot;
         }
-
 
         public List<PartGroup> PartGroups
         {
@@ -145,6 +148,7 @@ namespace com.funcom.legoxmlreader.modelviewer
                 allParts.Remove(p);
             }
             partsNotInThisModel = allParts;
+
             // shame we can't do this... partsNotInThisModel = allParts - sceneParts; without lots of "effort"
 
             foreach (Part p in partsNotInThisModel)
@@ -242,7 +246,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             elapsedTime = 0.0f;
         }
 
-        void Update()
+        private void Update()
         {
             if (IsAnimating())
             {
@@ -273,12 +277,11 @@ namespace com.funcom.legoxmlreader.modelviewer
             //		{
             //			UnityEngine.Object.Destroy(p.GetGameObject());
             //		}
-            //		
+            //
             //		foreach(GameObject flex in flexContainer)
             //		{
             //			UnityEngine.Object.Destroy(flex);
             //		}
-
 
             sceneParts.Clear();
 
@@ -347,7 +350,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             partsInFlightCount = 0;
             foreach (Part p in sceneParts)
             {
-                p.implodeEase = implodeEase; // this is done here instead of in ModelViewerMain::Start so we can experiment in real time			
+                p.implodeEase = implodeEase; // this is done here instead of in ModelViewerMain::Start so we can experiment in real time
                 p.usedInModel = true;
                 p.SetModelData(this, modelPartData[p]);
                 p.Trajectory = modelPartData[p].ImplodeTrajectory;
@@ -357,7 +360,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             }
             foreach (Part p in partsNotInThisModel)
             {
-                p.implodeEase = implodeEase; // this is done here instead of in ModelViewerMain::Start so we can experiment in real time			
+                p.implodeEase = implodeEase; // this is done here instead of in ModelViewerMain::Start so we can experiment in real time
                 p.usedInModel = false;
                 partsInFlightCount++;
                 p.SetModelDataUnused(this);
@@ -372,6 +375,7 @@ namespace com.funcom.legoxmlreader.modelviewer
         {	// must be assembled and all non used parts hidden
             sc.TakeGroupSnapshots(this, ca, w, h);
         }
+
         public void TakeWholeModelSnapshot(SnapshotCamera sc, CameraEngine ca, float w, float h)
         {
             // must be assembled and all non used parts hidden

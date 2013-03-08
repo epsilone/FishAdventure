@@ -1,10 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-
-class JellyFish : BaseLivingEntity
+﻿internal class JellyFish : BaseLivingEntity
 {
     private Aura aura;
 
@@ -17,7 +11,7 @@ class JellyFish : BaseLivingEntity
     {
         if (aura == null)
         {
-            aura = new Aura(5, true);
+            aura = new Aura(20, true);
         }
         return aura;
     }

@@ -1,22 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿internal class Fish : BaseLivingEntity
+{
+    private Aura aura = null;
 
-	class Fish : BaseLivingEntity
-	{
-        Aura aura = null;
-
-        public override EntityType GetEntityType()
+    public override Aura getAura()
+    {
+        if (aura == null)
         {
-            return EntityType.FISH;
+            aura = new Aura(1, true);
         }
-
-        public override Aura getAura()
-        {
-            if (aura == null) {
-                aura = new Aura(1, true);
-            }
-            return aura;
-        }
+        return aura;
     }
+
+    public override EntityType GetEntityType()
+    {
+        return EntityType.FISH;
+    }
+}

@@ -1,80 +1,83 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class TestLifeCycle : MonoBehaviour
 {
-    void Awake()
+    private void Awake()
     {
         logFrame("Awake");
     }
-    void Main()
+
+    private void Main()
     {
         logFrame("Main");
     }
-    void Start()
+
+    private void Start()
     {
         logFrame("Start");
     }
 
-    void myupdateMethod()
+    private void myupdateMethod()
     {
         logFrame("MyUpdate method");
     }
 
-    void OnLevelWasLoaded()
+    private void OnLevelWasLoaded()
     {
         logFrame("OnLevelWasLoaded");
     }
-    void OnNetworkLoadedLevel()
+
+    private void OnNetworkLoadedLevel()
     {
         logFrame("OnNetworkLoadedLevel");
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
         logFrame("OnEnable");
     }
-    void OnDisable()
+
+    private void OnDisable()
     {
         logFrame("OnDisable");
     }
-    void OnApplicationQuit()
+
+    private void OnApplicationQuit()
     {
         logFrame("OnApplicationQuit");
     }
 
-
-    void Update()
+    private void Update()
     {
         logFrame("Update");
     }
-    void LateUpdate()
+
+    private void LateUpdate()
     {
         logFrame("LateUpdate");
     }
-    void FixedUpdate()
+
+    private void FixedUpdate()
     {
         logFrame("FixedUpdate");
     }
-    void LateFixedUpdate()
+
+    private void LateFixedUpdate()
     {
         logFrame("LateFixedUpdate");
     }
 
-    void OnDrawGizmos()
+    private void OnDrawGizmos()
     {
         logFrame("OnDrawGizmos");
     }
-    void OnDrawGizmosSelected()
+
+    private void OnDrawGizmosSelected()
     {
         logFrame("OnDrawGizmosSelected");
     }
 
-
-    static void logFrame(string message)
+    private static void logFrame(string message)
     {
         Debug.Log(Time.frameCount + " - " + Time.realtimeSinceStartup + " - " + message);
     }

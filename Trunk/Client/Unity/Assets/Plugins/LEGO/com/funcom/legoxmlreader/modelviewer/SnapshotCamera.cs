@@ -7,10 +7,11 @@ namespace com.funcom.legoxmlreader.modelviewer
     {
         public Camera snapCamera;
 
-        void Awake()
+        private void Awake()
         {
         }
-        void Start()
+
+        private void Start()
         {
         }
 
@@ -34,6 +35,7 @@ namespace com.funcom.legoxmlreader.modelviewer
         public void TakeWholeModelSnapshot(Model model, CameraEngine ce, float w, float h)
         {
             CreateRenderingContext(w, h);
+
             //		GameObject go = GameObject.CreatePrimitive(UnityEngine.PrimitiveType.Plane) as GameObject;
             //		go.transform.localScale = new Vector3(20,20,20);
             //		go.transform.rotation = Quaternion.AngleAxis(275, Vector3.forward);
@@ -48,13 +50,13 @@ namespace com.funcom.legoxmlreader.modelviewer
             snapCamera.transform.position = ce.ComputeCameraPosition((ce.ComputeBoundsDistance(fullModelBounds) * 1.2f), fullModelBounds.center);
             snapCamera.transform.transform.LookAt(fullModelBounds.center);
             model.WholeModelSnapshot = new Texture2D(snapCamera.targetTexture.width, snapCamera.targetTexture.height, TextureFormat.ARGB32, false);
+
             //		Debug.Break();
             snapCamera.Render();
             model.WholeModelSnapshot.ReadPixels(new Rect(0, 0, snapCamera.targetTexture.width, snapCamera.targetTexture.height), 0, 0, false);
             model.WholeModelSnapshot.Apply();
             ReleaseContext();
             //		UnityEngine.Object.Destroy(go);
-
         }
 
         private void CreateRenderingContext(float w, float h)

@@ -1,8 +1,8 @@
-using UnityEngine;
-using System.Collections.Generic;
-using System.Xml;
 using System;
+using System.Collections.Generic;
 using System.IO;
+using System.Xml;
+using UnityEngine;
 
 namespace com.funcom.legoxmlreader.modelviewer
 {
@@ -119,7 +119,6 @@ namespace com.funcom.legoxmlreader.modelviewer
                                                 {
                                                     materialId = Mathf.Abs(Convert.ToInt16(reader.Value));
                                                 }
-
                                             } break;
                                         case "decoration": //key
                                             {
@@ -153,12 +152,12 @@ namespace com.funcom.legoxmlreader.modelviewer
                                 // we are dealing here with parts - or more accurately bones - that's where the transforms are contained.
                                 // we need to create a bones structure or class, fill that with data from the xml file and pass a list
                                 // of the bones to the PartsDatabase (maybe to be renamed as "visibleItemsDatabase?" - if there is one bone then
-                                // creation of a copy of a prefab will be in the single part method, otherwise it'll be multiple bones and 
+                                // creation of a copy of a prefab will be in the single part method, otherwise it'll be multiple bones and
                                 // the flex brick creation mechanism. Flying stuff should be ok if the bones fly off whereever - we do not need
                                 // to keep them as a coherent whole and move them as a group (working down the bones with local/world matrix positions etc.)
                                 // - does not matter for this application.
 
-                                // every visibleItem has a model transform (one for each model - contained in the models items db) and a transform in the 
+                                // every visibleItem has a model transform (one for each model - contained in the models items db) and a transform in the
                                 // visible item itself - its current position - and a calculated exploded position as before
                                 // flying is done as before in the visible item itself.
 
@@ -211,11 +210,9 @@ namespace com.funcom.legoxmlreader.modelviewer
                                 {
                                     Debug.Log("encountered flex/hinge brick NOT SUPPORTED YET");
                                 }
-
                             }
                         }
                     }
-
                 }
                 model.PartGroups = new List<PartGroup>(groupDraft.Values);
                 model.PostLoadRoutine();
@@ -227,6 +224,7 @@ namespace com.funcom.legoxmlreader.modelviewer
                         model.Clear();
                         success = false;
                     }*/
+
             //PartDatabase.Singleton.ShowContents();
             return success;
         }

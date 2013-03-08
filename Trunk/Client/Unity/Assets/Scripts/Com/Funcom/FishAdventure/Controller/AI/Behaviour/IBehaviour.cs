@@ -1,21 +1,18 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-public interface IBehaviour
+﻿public interface IBehaviour
 {
     int GetWeight();
 
     BehaviourType GetBehaviourType();
-    
+
     void Start();
 
-    void TweenUpdate();
+    void GenericTweenUpdate(object args);
 
     void Update();
-    
+
+    void LateUpdate();
+
     void OnDrawGizmos();
 
-    void Stop();   
+    void Stop();
 }
