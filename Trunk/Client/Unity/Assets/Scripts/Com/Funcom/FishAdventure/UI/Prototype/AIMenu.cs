@@ -47,9 +47,9 @@ public class AIMenu : MonoBehaviour {
             }
 
             for (int i = 0; i < entities.Length; i++) {
-                GUI.Label(new Rect(0, 30 * i + 30, 20, 20), entities[i].id.ToString());
-                GUI.Label(new Rect(20, 30 * i + 30, 50, 20), entities[i].informationBoxNeed);
-                GUI.Label(new Rect(70, 30 * i + 30, 150, 20), entities[i].informationBoxBehaviour);
+                GUI.Label(new Rect(0, 30 * i + 30, 20, 22), entities[i].id.ToString());
+                GUI.Label(new Rect(20, 30 * i + 30, 50, 22), entities[i].informationBoxNeed);
+                GUI.Label(new Rect(70, 30 * i + 30, 150, 22), entities[i].informationBoxBehaviour);
             }
         }
 

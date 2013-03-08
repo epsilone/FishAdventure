@@ -22,6 +22,7 @@ public class AnimationMenu:MonoBehaviour
 	private const int NUMBER_OF_BUTTON = 3;
 	private  float BTN_WIDTH = 250.0f;
 	private  float BTN_HEIGHT = 75.0f;
+    private const int HIGH_Y = 8, LOW_Y = 0, FIXED_Z = -15;
 	
 	void Start()
 	{
@@ -53,8 +54,8 @@ public class AnimationMenu:MonoBehaviour
 	void OnGUI()
 	{
 		GUI.Label(new Rect(0,0,Screen.width,30),"Animation Prototype");
-	    
-
+        Vector3 cameraPos = gameObject.transform.position;
+      
 
         GUI.skin.button.fontStyle = FontStyle.Normal;
         GUI.skin.button.fontSize = 16;
@@ -65,12 +66,14 @@ public class AnimationMenu:MonoBehaviour
 
         GUI.skin.button.fontStyle = FontStyle.Italic;
 	    GUI.skin.button.fontSize = Screen.height/72*3;
-		if (GUI.Button(new Rect(0, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 2) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"Preskinned: Goal Look"))
+        if (GUI.Button(new Rect(0, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 1) - (BTN_HEIGHT * 0.5f), BTN_WIDTH, BTN_HEIGHT), "Preskinned: Goal Look"))
 		{
 			if(ChangeState(1) == false) {return;}
 			
 			ClearPreviousInstance();
 			PreSkinnedMesh.SetActive(true);
+            gameObject.transform.position = new Vector3(cameraPos.x, LOW_Y, FIXED_Z);
+
 		}
 
         GUI.skin.button.fontStyle = FontStyle.Normal;
@@ -82,6 +85,7 @@ public class AnimationMenu:MonoBehaviour
 			GenericUtil.CombineChildMeshesToFilter(Fish);
 			Fish.AddComponent("ProceduralSwimAnimation");
 			Fish.AddComponent("ViewDrag");
+            gameObject.transform.position = new Vector3(cameraPos.x, HIGH_Y, FIXED_Z);
 		}
 
         if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 2) - (BTN_HEIGHT * 0.5f), BTN_WIDTH, BTN_HEIGHT), "Procedural Animation\nwith Manual Bones")) {
@@ -179,6 +183,8 @@ public class AnimationMenu:MonoBehaviour
             iTween.RotateBy(bonesRef[1].gameObject, hastTable);
             iTween.RotateBy(bonesRef[2].gameObject, hastTable);
             iTween.RotateBy(bonesRef[3].gameObject, hastTable);
+
+            gameObject.transform.position = new Vector3(cameraPos.x, HIGH_Y, FIXED_Z);
         }
         GUI.skin.button.fontStyle = FontStyle.Bold;
         if (GUI.Button(new Rect(Screen.width - BTN_WIDTH,
@@ -255,6 +261,8 @@ public class AnimationMenu:MonoBehaviour
 			//Animation
 			SkinningPrefab.animation.wrapMode = WrapMode.Loop;
 			SkinningPrefab.animation.Play("swim");
+
+            gameObject.transform.position = new Vector3(cameraPos.x, HIGH_Y, FIXED_Z);
 		}
 	}
 	

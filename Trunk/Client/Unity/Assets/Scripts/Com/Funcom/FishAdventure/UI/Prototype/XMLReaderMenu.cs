@@ -10,13 +10,13 @@ public class XMLReaderMenu:MonoBehaviour
     private float BTN_WIDTH = 200.0f;
     private float BTN_HEIGHT = 60.0f;
 
-    private const int HIGH_Y = 7, LOW_Y = 4;
+    private const int HIGH_Y = 7, LOW_Y = 2, FIXED_Z = -15;
 
     void Start()
     {
 
-        BTN_WIDTH = Screen.width * 0.33f;
-        BTN_HEIGHT = Screen.height * 0.2f;
+        BTN_WIDTH = Screen.width * 0.2f;
+        BTN_HEIGHT = Screen.height * 0.12f;
     }
 	
 	void OnGUI()
@@ -31,35 +31,35 @@ public class XMLReaderMenu:MonoBehaviour
             Application.LoadLevel("PrototypeMainMenu");
         }
         GUI.skin.button.fontSize = Screen.height / 72 * 3;
-        if (GUI.Button(new Rect(Screen.width - 200, ((Screen.height / (NUMBER_OF_BUTTON + 1)) * 1) - 30, 200, 60), "Mario"))
+        if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, ((Screen.height / (NUMBER_OF_BUTTON + 1)) * 1) - 30, BTN_WIDTH, BTN_HEIGHT), "Mario"))
 		{
 			InvokeFish("redmariofish");
-            gameObject.transform.position = new Vector3(cameraPos.x, HIGH_Y, cameraPos.z);
+            gameObject.transform.position = new Vector3(cameraPos.x, HIGH_Y, FIXED_Z);
 		}
-		
-		if (GUI.Button(new Rect(Screen.width-200,((Screen.height / (NUMBER_OF_BUTTON + 1)) * 2) - 30,200,60),"Fish"))
+
+        if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, ((Screen.height / (NUMBER_OF_BUTTON + 1)) * 2) - 30, BTN_WIDTH, BTN_HEIGHT), "Fish"))
 		{
 			InvokeFish("horizontalfish");
-            gameObject.transform.position = new Vector3(cameraPos.x, LOW_Y, cameraPos.z);
+            gameObject.transform.position = new Vector3(cameraPos.x, LOW_Y, FIXED_Z);
 		}
-		
-		if (GUI.Button(new Rect(Screen.width-200,((Screen.height / (NUMBER_OF_BUTTON + 1)) * 3) - 30,200,60),"Bus"))
+
+        if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, ((Screen.height / (NUMBER_OF_BUTTON + 1)) * 3) - 30, BTN_WIDTH, BTN_HEIGHT), "Bus"))
 		{
 			InvokeFish("thebus");
-            gameObject.transform.position = new Vector3(cameraPos.x, LOW_Y, cameraPos.z);
+            gameObject.transform.position = new Vector3(cameraPos.x, LOW_Y, FIXED_Z);
 		}
-		
-		if (GUI.Button(new Rect(Screen.width-200,((Screen.height / (NUMBER_OF_BUTTON + 1)) * 4) - 30,200,60),"Octopod"))
+
+        if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, ((Screen.height / (NUMBER_OF_BUTTON + 1)) * 4) - 30, BTN_WIDTH, BTN_HEIGHT), "Octopod"))
 		{
 			InvokeFish("octopod");
-            gameObject.transform.position = new Vector3(cameraPos.x, LOW_Y, cameraPos.z);
+            gameObject.transform.position = new Vector3(cameraPos.x, 2*LOW_Y, FIXED_Z);
 		}
 
         GUI.skin.button.fontStyle = FontStyle.Bold;
-		if (GUI.Button(new Rect(Screen.width-200,((Screen.height / (NUMBER_OF_BUTTON + 1)) * 5) - 30,200,60),"Hero Fish"))
+        if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, ((Screen.height / (NUMBER_OF_BUTTON + 1)) * 5) - 30, BTN_WIDTH, BTN_HEIGHT), "Hero Fish"))
 		{
 			InvokeFish("hero_fish");
-            gameObject.transform.position = new Vector3(cameraPos.x, LOW_Y, cameraPos.z);
+            gameObject.transform.position = new Vector3(cameraPos.x, LOW_Y, FIXED_Z);
 		}
 
 	   

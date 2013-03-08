@@ -31,6 +31,8 @@ public class PrototypeMainMenu:MonoBehaviour
 		GUI.Label(new Rect(0,0,Screen.width,30),"Prototype Main Menu");
 
 	    GUI.skin.button.fontSize = Screen.height/72*3;
+        GUI.skin.button.fontStyle = FontStyle.Normal;
+
 
 		if (GUI.Button(new Rect((float)(Screen.width * 0.5f) - (BTN_WIDTH * 0.5f), (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 1) - (BTN_HEIGHT * 0.5f),BTN_WIDTH,BTN_HEIGHT),"XML Reader"))
 		{
