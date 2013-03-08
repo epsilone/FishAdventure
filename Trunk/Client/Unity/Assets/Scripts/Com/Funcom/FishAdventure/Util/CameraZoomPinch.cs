@@ -44,11 +44,11 @@ public class CameraZoomPinch : MonoBehaviour {
 
             Vector3 cameraPosition = gameObject.transform.position;
             if ((touchDelta + varianceInDistances <= 1) && (speedTouch0 > minPinchSpeed) && (speedTouch1 > minPinchSpeed)) {
-                gameObject.transform.position = new Vector3(cameraPosition.x, cameraPosition.y, Mathf.Clamp(cameraPosition.z - (1 * 0.5*speed), MINSCALE, MAXSCALE));
+                gameObject.transform.position = new Vector3(cameraPosition.x, cameraPosition.y, Mathf.Clamp(cameraPosition.z - (1 * 0.5f*speed), MINSCALE, MAXSCALE));
             }
 
             if ((touchDelta + varianceInDistances > 1) && (speedTouch0 > minPinchSpeed) && (speedTouch1 > minPinchSpeed)) {
-                gameObject.transform.position = new Vector3(cameraPosition.x, cameraPosition.y, Mathf.Clamp(cameraPosition.z + (1 * 0.5 * speed), MINSCALE, MAXSCALE));
+                gameObject.transform.position = new Vector3(cameraPosition.x, cameraPosition.y, Mathf.Clamp(cameraPosition.z + (1 * 0.5f * speed), MINSCALE, MAXSCALE));
             }
 
         }
