@@ -3,9 +3,8 @@ using System.Collections;
 
 public class CameraZoomPinch : MonoBehaviour {
     public int speed = 4;
-    public Camera selectedCamera;
-    public float MINSCALE = 2.0F;
-    public float MAXSCALE = 5.0F;
+    public float MINSCALE = -50.0F;
+    public float MAXSCALE = -10.0F;
     public float minPinchSpeed = 5.0F;
     public float varianceInDistances = 5.0F;
     private float touchDelta = 0.0F;
@@ -21,8 +20,20 @@ public class CameraZoomPinch : MonoBehaviour {
 
     // Update is called once per frame
     void Update() {
+        
 
-        if (Input.touchCount == 2 && Input.GetTouch(0).phase == TouchPhase.Moved && Input.GetTouch(1).phase == TouchPhase.Moved) {
+         if (Input.GetAxis("Mouse ScrollWheel") != 0.0F) {
+             Debug.Log(Input.GetAxis("Mouse ScrollWheel"));
+             Vector3 cameraPosition = gameObject.transform.position;
+
+             gameObject.transform.position = new Vector3(cameraPosition.x, cameraPosition.y,
+                 Mathf.Clamp(cameraPosition.z + (Input.GetAxis("Mouse ScrollWheel") * speed), MINSCALE, MAXSCALE));
+             Debug.Log(gameObject.transform.position.z);
+         }
+
+
+
+        else if (Input.touchCount == 2 && Input.GetTouch(0).phase == TouchPhase.Moved && Input.GetTouch(1).phase == TouchPhase.Moved) {
 
             curDist = Input.GetTouch(0).position - Input.GetTouch(1).position; //current distance between finger touches
             prevDist = ((Input.GetTouch(0).position - Input.GetTouch(0).deltaPosition) - (Input.GetTouch(1).position - Input.GetTouch(1).deltaPosition)); //difference in previous locations using delta positions
@@ -31,14 +42,13 @@ public class CameraZoomPinch : MonoBehaviour {
             speedTouch1 = Input.GetTouch(1).deltaPosition.magnitude / Input.GetTouch(1).deltaTime;
 
 
+            Vector3 cameraPosition = gameObject.transform.position;
             if ((touchDelta + varianceInDistances <= 1) && (speedTouch0 > minPinchSpeed) && (speedTouch1 > minPinchSpeed)) {
-
-                selectedCamera.fieldOfView = Mathf.Clamp(selectedCamera.fieldOfView + (1 * speed), 15, 90);
+                gameObject.transform.position = new Vector3(cameraPosition.x, cameraPosition.y, Mathf.Clamp(cameraPosition.z + (1 * speed), MINSCALE, MAXSCALE));
             }
 
             if ((touchDelta + varianceInDistances > 1) && (speedTouch0 > minPinchSpeed) && (speedTouch1 > minPinchSpeed)) {
-
-                selectedCamera.fieldOfView = Mathf.Clamp(selectedCamera.fieldOfView - (1 * speed), 15, 90);
+                gameObject.transform.position = new Vector3(cameraPosition.x, cameraPosition.y, Mathf.Clamp(cameraPosition.z - (1 * speed), MINSCALE, MAXSCALE));
             }
 
         }

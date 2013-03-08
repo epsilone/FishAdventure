@@ -31,7 +31,7 @@ public class CustomizationMenu : MonoBehaviour {
     void OnGUI() {
         GUI.Label(new Rect(0, 0, Screen.width, 30), "Customization Prototype");
 
-
+        GUI.skin.button.fontSize = Screen.height / 72 * 3;
         if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 1) - (BTN_HEIGHT * 0.5f), BTN_WIDTH, BTN_HEIGHT), "Static Cube Decal")) {
             if (Fish != null) {
                 Destroy(Fish);
@@ -53,6 +53,8 @@ public class CustomizationMenu : MonoBehaviour {
 
         }
 
+
+        GUI.skin.button.fontSize = 16;
         if (GUI.Button(new Rect(0, Screen.height - 40, 100, 40), "Main Menu")) {
             Debug.Log("GoTo: PrototypeMainMenu");
             Application.LoadLevel("PrototypeMainMenu");
@@ -81,6 +83,16 @@ public class CustomizationMenu : MonoBehaviour {
                     }
                 }
             }
+        }
+
+        if (Input.GetKeyDown(KeyCode.Escape))
+        {
+            Application.LoadLevel("PrototypeMainMenu");
+        }
+
+        if(Input.GetKeyDown(KeyCode.Menu))
+        {
+            Application.Quit(); 
         }
     }
 

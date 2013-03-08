@@ -48,4 +48,15 @@ public class XMLReaderMenu:MonoBehaviour
         Fish = LEGOXMLReader.GetLegoObjectByLxfml((Resources.Load("XML/BaseFish/" + xmlName, typeof(TextAsset)) as TextAsset).text, "Fish");
 		Fish.AddComponent("ViewDrag");
 	}
+
+    void Update()
+    {
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            Application.LoadLevel("PrototypeMainMenu");
+        }
+
+        if (Input.GetKeyDown(KeyCode.Menu)) {
+            Application.Quit();
+        }
+    }
 }
