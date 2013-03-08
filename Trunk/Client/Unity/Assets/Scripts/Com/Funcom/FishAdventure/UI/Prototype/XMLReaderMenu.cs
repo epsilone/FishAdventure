@@ -10,6 +10,8 @@ public class XMLReaderMenu:MonoBehaviour
     private float BTN_WIDTH = 200.0f;
     private float BTN_HEIGHT = 60.0f;
 
+    private const int HIGH_Y = 7, LOW_Y = 4;
+
     void Start()
     {
 
@@ -19,6 +21,8 @@ public class XMLReaderMenu:MonoBehaviour
 	
 	void OnGUI()
 	{
+	    Vector3 cameraPos = gameObject.transform.position;
+
         GUI.skin.button.fontSize = 16;
         GUI.Label(new Rect(0, 0, Screen.width, 30), "XML Reader Prototype");
         GUI.skin.button.fontStyle = FontStyle.Normal;
@@ -30,27 +34,32 @@ public class XMLReaderMenu:MonoBehaviour
         if (GUI.Button(new Rect(Screen.width - 200, ((Screen.height / (NUMBER_OF_BUTTON + 1)) * 1) - 30, 200, 60), "Mario"))
 		{
 			InvokeFish("redmariofish");
+            gameObject.transform.position = new Vector3(cameraPos.x, HIGH_Y, cameraPos.z);
 		}
 		
 		if (GUI.Button(new Rect(Screen.width-200,((Screen.height / (NUMBER_OF_BUTTON + 1)) * 2) - 30,200,60),"Fish"))
 		{
 			InvokeFish("horizontalfish");
+            gameObject.transform.position = new Vector3(cameraPos.x, LOW_Y, cameraPos.z);
 		}
 		
 		if (GUI.Button(new Rect(Screen.width-200,((Screen.height / (NUMBER_OF_BUTTON + 1)) * 3) - 30,200,60),"Bus"))
 		{
 			InvokeFish("thebus");
+            gameObject.transform.position = new Vector3(cameraPos.x, LOW_Y, cameraPos.z);
 		}
 		
 		if (GUI.Button(new Rect(Screen.width-200,((Screen.height / (NUMBER_OF_BUTTON + 1)) * 4) - 30,200,60),"Octopod"))
 		{
 			InvokeFish("octopod");
+            gameObject.transform.position = new Vector3(cameraPos.x, LOW_Y, cameraPos.z);
 		}
 
         GUI.skin.button.fontStyle = FontStyle.Bold;
 		if (GUI.Button(new Rect(Screen.width-200,((Screen.height / (NUMBER_OF_BUTTON + 1)) * 5) - 30,200,60),"Hero Fish"))
 		{
 			InvokeFish("hero_fish");
+            gameObject.transform.position = new Vector3(cameraPos.x, LOW_Y, cameraPos.z);
 		}
 
 	   
