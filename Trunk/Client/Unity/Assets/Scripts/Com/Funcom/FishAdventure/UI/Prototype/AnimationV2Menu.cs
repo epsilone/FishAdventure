@@ -104,7 +104,8 @@ public class AnimationV2Menu:MonoBehaviour
 	void OnGUI ()
 	{
 		GUI.Label (new Rect (0, 0, Screen.width, 30), "Animation Prototype V2");
-		
+		GUI.skin.button.fontStyle = FontStyle.Normal;
+	    GUI.skin.button.fontSize = 16;
 		if (GUI.Button (new Rect (0, Screen.height - 40, 100, 40), "Main Menu")) {
 			Debug.Log ("GoTo: PrototypeMainMenu");
 			Application.LoadLevel ("PrototypeMainMenu");
@@ -271,8 +272,14 @@ public class AnimationV2Menu:MonoBehaviour
 				}
 			}
 		}
-		
-		
+
+        if (Input.GetKeyDown(KeyCode.Escape)) {
+            Application.LoadLevel("PrototypeMainMenu");
+        }
+
+        if (Input.GetKeyDown(KeyCode.Menu)) {
+            Application.Quit();
+        }
 	}
 	
 }

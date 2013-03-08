@@ -44,6 +44,10 @@ public class AnimationMenu:MonoBehaviour
 		SkinningPrefabProcAnim = GameObject.Find("SkinningPrefabProcAnim");
 		SkinningPrefabProcAnim.AddComponent("ViewDrag");
 		SkinningPrefabProcAnim.SetActive(false);
+
+
+        BTN_WIDTH = Screen.width * 0.33f;
+        BTN_HEIGHT = Screen.height * 0.2f;
 	}
 	
 	void OnGUI()
@@ -51,8 +55,6 @@ public class AnimationMenu:MonoBehaviour
 		GUI.Label(new Rect(0,0,Screen.width,30),"Animation Prototype");
 	    
 
-        BTN_WIDTH = Screen.width*0.33f;
-	    BTN_HEIGHT = Screen.height*0.2f;
 
         GUI.skin.button.fontStyle = FontStyle.Normal;
         GUI.skin.button.fontSize = 16;

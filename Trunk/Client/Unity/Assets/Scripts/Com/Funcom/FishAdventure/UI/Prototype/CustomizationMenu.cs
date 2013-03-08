@@ -4,8 +4,8 @@ using System.Collections;
 
 public class CustomizationMenu : MonoBehaviour {
     private const int NUMBER_OF_BUTTON = 2;
-    private const float BTN_WIDTH = 200.0f;
-    private const float BTN_HEIGHT = 60.0f;
+    private float BTN_WIDTH = 200.0f;
+    private float BTN_HEIGHT = 60.0f;
 
     private GameObject staticCube;
     private GameObject Fish;
@@ -26,13 +26,16 @@ public class CustomizationMenu : MonoBehaviour {
     // Use this for initialization
     void Start() {
         randomizer = new System.Random();
+        BTN_WIDTH = Screen.width * 0.33f;
+        BTN_HEIGHT = Screen.height * 0.2f;
     }
 
     void OnGUI() {
         GUI.Label(new Rect(0, 0, Screen.width, 30), "Customization Prototype");
-
+        
+        GUI.skin.button.fontStyle = FontStyle.Normal;
         GUI.skin.button.fontSize = Screen.height / 72 * 3;
-        if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 1) - (BTN_HEIGHT * 0.5f), BTN_WIDTH, BTN_HEIGHT), "Static Cube Decal")) {
+        if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 1) - (BTN_HEIGHT * 0.5f), BTN_WIDTH, BTN_HEIGHT), "Flat Cube\n3 Decals")) {
             if (Fish != null) {
                 Destroy(Fish);
             }
@@ -42,7 +45,7 @@ public class CustomizationMenu : MonoBehaviour {
             transform.position = new Vector3(0, 0, -2);
 
         }
-        if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 2) - (BTN_HEIGHT * 0.5f), BTN_WIDTH, BTN_HEIGHT), "Procedural Fish Decal")) {
+        if (GUI.Button(new Rect(Screen.width - BTN_WIDTH, (((float)Screen.height / (NUMBER_OF_BUTTON + 1)) * 2) - (BTN_HEIGHT * 0.5f), BTN_WIDTH, BTN_HEIGHT), "Animated Fish\n3 Decals")) {
             if (staticCube != null) {
                 Destroy(staticCube);
             }
