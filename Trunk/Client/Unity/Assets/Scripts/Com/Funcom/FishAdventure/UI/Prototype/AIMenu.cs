@@ -18,8 +18,8 @@ public class AIMenu : MonoBehaviour {
 
     void Start() {
         entities = (BaseLivingEntity[])GameObject.FindObjectsOfType(typeof(BaseLivingEntity));
-        BTN_WIDTH = Screen.width * 0.2f;
-        BTN_HEIGHT = Screen.height * 0.1f;
+        BTN_WIDTH = 150;
+        BTN_HEIGHT = 40;
     }
 
 
@@ -53,7 +53,7 @@ public class AIMenu : MonoBehaviour {
             }
         }
 
-        GUI.skin.button.fontSize = Screen.height / 72 * 3;
+        
         if (GUI.Button(new Rect(infoHidden ? 0 : 300, 0, BTN_WIDTH, BTN_HEIGHT), infoHidden ? "Show Info" : "Hide Info")) {
             infoHidden = !infoHidden;
         }
