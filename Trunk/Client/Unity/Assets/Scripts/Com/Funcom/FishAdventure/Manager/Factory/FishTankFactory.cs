@@ -1,12 +1,9 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-
-class FishTankFactory
+internal class FishTankFactory
 {
-    static FishTankFactory INSTANCE;
+    private static FishTankFactory INSTANCE;
 
     public static FishTankFactory getInstance()
     {
@@ -29,21 +26,27 @@ class FishTankFactory
                 case BehaviourType.IDLE:
                     behaviour = new IdleBehaviour(b.Type, b.Weight);
                     break;
+
                 case BehaviourType.SWIM:
                     behaviour = new SwinBehaviour(b.Type, b.Weight);
                     break;
+
                 case BehaviourType.CHASE:
                     behaviour = new ChaseBehaviour(b.Type, b.Weight, b.TriggerEntities);
                     break;
+
                 case BehaviourType.CIRCLE:
                     behaviour = new CircleBehaviour(b.Type, b.Weight, b.TriggerEntities);
                     break;
+
                 case BehaviourType.FLEE:
                     behaviour = new FleeBehaviour(b.Type, b.Weight, b.TriggerEntities);
                     break;
+
                 case BehaviourType.FOLLOW:
                     behaviour = new FollowBehaviour(b.Type, b.Weight, b.TriggerEntities);
                     break;
+
                 default:
                     throw new System.InvalidOperationException();
             }
@@ -54,13 +57,10 @@ class FishTankFactory
         return returnValue;
     }
 
-
     private List<ItemInfo> getSupportedItems(BaseLivingEntity entity)
     {
         return ItemsRegistry.getInstance().getSupportedItemsForType(entity.GetEntityType());
     }
-
-
 
     // TODO : use for testing item integration
     public IItem createRandomSupportedItem(BaseLivingEntity entity)
@@ -68,6 +68,7 @@ class FishTankFactory
         List<ItemInfo> supported = getSupportedItems(entity);
         Random r = new Random();
         int randomOffSet = r.Next(0, supported.Count);
+
         // retrun item not item info, not implemented at the moment
         ItemInfo randomSupportedInfo = supported[randomOffSet];
         return createItem(randomSupportedInfo);
@@ -80,7 +81,6 @@ class FishTankFactory
 
     public List<Need> createSupportedNeeds(BaseLivingEntity entity)
     {
-
         List<Need> returnValue = new List<Need>();
         List<NeedRegistry.NeedInfo> needsInfo = NeedRegistry.getInstance().getSupportedNeedsForType(entity.GetEntityType());
         foreach (NeedRegistry.NeedInfo info in needsInfo)
@@ -90,8 +90,4 @@ class FishTankFactory
         }
         return returnValue;
     }
-
-
-
 }
-

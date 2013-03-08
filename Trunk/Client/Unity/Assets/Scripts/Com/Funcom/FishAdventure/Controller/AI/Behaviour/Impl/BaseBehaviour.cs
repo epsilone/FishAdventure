@@ -1,12 +1,14 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
-
-abstract class BaseBehaviour : IBehaviour
+﻿internal abstract class BaseBehaviour : IBehaviour
 {
-    BaseLivingEntity livingEntity;
+    private float animationSpeed;
+
+    public float AnimationSpeed
+    {
+        get { return animationSpeed; }
+        set { animationSpeed = value; }
+    }
+
+    private BaseLivingEntity livingEntity;
 
     public BaseLivingEntity LivingEntity
     {
@@ -27,6 +29,7 @@ abstract class BaseBehaviour : IBehaviour
         get { return type; }
         set { type = value; }
     }
+
     private int weight;
 
     public int Weight
@@ -35,29 +38,33 @@ abstract class BaseBehaviour : IBehaviour
         set { weight = value; }
     }
 
-
     public BehaviourType GetBehaviourType()
     {
         return type;
     }
-
 
     public int GetWeight()
     {
         return weight;
     }
 
-
-
     public abstract void Start();
+
     public abstract void Update();
+
     public abstract void Stop();
-    public virtual void TweenUpdate()
-    {
-    }
 
     public virtual void OnDrawGizmos()
     {
     }
 
+    public virtual void GenericTweenUpdate(object args)
+    {
+    }
+
+
+    public virtual void LateUpdate()
+    {
+
+    }
 }

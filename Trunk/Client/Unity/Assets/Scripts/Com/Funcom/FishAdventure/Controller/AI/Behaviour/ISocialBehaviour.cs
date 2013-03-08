@@ -1,11 +1,8 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
-interface ISocialBehaviour : IBehaviour
+internal interface ISocialBehaviour : IBehaviour
 {
-     List<EntityType> getTriggeringTypes();
+    List<EntityType> getTriggeringTypes();
 
-     void SetTargetEntity(IEntity entity);
+    void SetTargetEntity(IEntity entity);
 }

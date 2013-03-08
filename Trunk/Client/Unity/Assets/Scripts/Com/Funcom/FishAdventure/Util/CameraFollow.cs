@@ -1,18 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class CameraFollow : MonoBehaviour
 {
     public Transform target;
-    float followDistance = 200;
+    public float followDistance = 10;
 
-    void Update()
+    private void Update()
     {
-        iTween.MoveUpdate(gameObject, new Vector3(target.position.x, 0, -followDistance), .8f);
+        iTween.MoveUpdate(gameObject, new Vector3(target.position.x, target.position.y, target.position.z - followDistance), .8f);
     }
 }
-
-

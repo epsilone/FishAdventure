@@ -1,26 +1,23 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Collections.Generic;
 
-class NeedRegistry
+internal class NeedRegistry
 {
-    static Dictionary<EntityType, List<NeedInfo>> needsDictionary;
+    private static Dictionary<EntityType, List<NeedInfo>> needsDictionary;
 
-    static NeedRegistry INSTANCE;
+    private static NeedRegistry INSTANCE;
 
     static NeedRegistry()
     {
         needsDictionary = new Dictionary<EntityType, List<NeedInfo>>();
 
         List<NeedInfo> curList = new List<NeedInfo>();
+
         // JELLY FISH
         EntityType curType = EntityType.JELLYFISH;
         curList.Add(new NeedInfo(NeedType.EAT, 1));
         curList.Add(new NeedInfo(NeedType.BUILD, 1));
         curList.Add(new NeedInfo(NeedType.INTERACT, 3));
         curList.Add(new NeedInfo(NeedType.NONE, 1));
-
 
         needsDictionary.Add(curType, curList);
 
@@ -44,7 +41,6 @@ class NeedRegistry
         curList.Add(new NeedInfo(NeedType.NONE, 1));
 
         needsDictionary.Add(curType, curList);
-
     }
 
     public List<NeedInfo> getSupportedNeedsForType(EntityType type)
@@ -66,7 +62,6 @@ class NeedRegistry
         return INSTANCE;
     }
 
-
     public class NeedInfo
     {
         public NeedInfo(NeedType type, int weight)
@@ -82,6 +77,7 @@ class NeedRegistry
             get { return type; }
             set { type = value; }
         }
+
         private int weight;
 
         public int Weight

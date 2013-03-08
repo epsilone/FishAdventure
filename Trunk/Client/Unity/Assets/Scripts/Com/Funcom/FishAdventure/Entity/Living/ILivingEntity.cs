@@ -1,11 +1,12 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-public interface ILivingEntity : IEntity 
+﻿public interface ILivingEntity : IEntity
 {
     IBehaviour GetCurrentBehaviour();
 
     INeed GetCurrentNeed();
+
+
+    /**
+     * Used as a generic method for itween callbacks
+     * */
+    void GenericTweenUpdate(object args);
 }

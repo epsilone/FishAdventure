@@ -9,6 +9,7 @@ namespace com.funcom.legoxmlreader.modelviewer
     {
         // singletonisation...
         private static PartDatabase singleton;
+
         public static PartDatabase Singleton
         {
             get
@@ -20,6 +21,7 @@ namespace com.funcom.legoxmlreader.modelviewer
                 return singleton;
             }
         }
+
         public Vector3 modelOffsetPosition = Vector3.zero;
 
         private struct PartUsageItem
@@ -30,13 +32,13 @@ namespace com.funcom.legoxmlreader.modelviewer
 
         private SortedDictionary<int, PartUsageItem> partUsageList = new SortedDictionary<int, PartUsageItem>();
 
-
         private Dictionary<int, Color> solidColors;
         private Dictionary<int, Color> transparentColors;
         private Shader overloadVertexLitShader;
 
         //key = designId, next key is a material id, then the value is a list of parts of this design ids with these materials and decorations.
         private Dictionary<string, List<Part>> parts = new Dictionary<string, List<Part>>();
+
         //private List<Bone> bones = new List<Bone>();
         //parts should be keyed on designID, material and decoration(s)
         //private  Dictionary<int,Dictionary<int,Dictionary<List<int>, db;
@@ -62,6 +64,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             }
             return allParts;
         }
+
         public void StartModelEntry()
         {
             setAllInUse(false);
@@ -102,7 +105,7 @@ namespace com.funcom.legoxmlreader.modelviewer
                         {   // found an existing unused part that matches - must be from another model - use this
                             p = pt;
                             break;
-                        }	
+                        }
                     }*/
 
                     if (p == null)
@@ -136,7 +139,7 @@ namespace com.funcom.legoxmlreader.modelviewer
         }
 
         private void SetPartData(Part pPart, List<Matrix4x4> pBoneTransforms)
-        {	// expand for flex  using bones					
+        {	// expand for flex  using bones
             if (pBoneTransforms.Count == 1)
             {	// not a flex - just the one bone
                 pPart.transform.position = GetPosition(pBoneTransforms[0]);
@@ -166,6 +169,7 @@ namespace com.funcom.legoxmlreader.modelviewer
                     CreateMaterial(partGameObject, pMaterialId);
                     AddDecorations(partGameObject, pDecorations);
                 }
+
                 //			else
                 //			{ // flex - NOT YET SUPPORTED
                 //				boneGameObject.transform.position = Vector3.zero;
@@ -175,11 +179,11 @@ namespace com.funcom.legoxmlreader.modelviewer
                 //					foreach(Transform child in boneGameObject.transform)
                 //					{
                 //						if(child.gameObject.name.Equals("Bone_" + Convert.ToString(i)))
-                //						{	
+                //						{
                 //							Bone newBone = boneGameObject.AddComponent<Bone>() as Bone;
                 //							child.transform.position = GetPosition(pBoneTransforms[i]);
                 //							child.transform.rotation = GetRotation(pBoneTransforms[i]);
-                //							newPart.AddBone(newBone,i);							
+                //							newPart.AddBone(newBone,i);
                 //							break;
                 //						}
                 //					}
@@ -246,7 +250,6 @@ namespace com.funcom.legoxmlreader.modelviewer
 
         public void AddDecorations(GameObject decorateObject, List<int> pDecoIds)
         {
-
             for (int i = 0; i < pDecoIds.Count; i++)
             {
                 foreach (Transform t in decorateObject.transform)
@@ -261,6 +264,7 @@ namespace com.funcom.legoxmlreader.modelviewer
                             if (decoTexture == null)
                             {
                                 Debug.LogWarning("Missing decoration -> " + pDecoIds[i]);
+
                                 //Debug.Break();
                             }
                             else if (decoRenderer)

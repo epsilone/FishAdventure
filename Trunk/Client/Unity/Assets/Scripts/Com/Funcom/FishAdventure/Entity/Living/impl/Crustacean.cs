@@ -1,9 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-class Crustacean : BaseLivingEntity
+﻿internal class Crustacean : BaseLivingEntity
 {
     private Aura aura = null;
 
@@ -14,10 +9,10 @@ class Crustacean : BaseLivingEntity
 
     public override Aura getAura()
     {
-        if (aura == null) {
+        if (aura == null)
+        {
             aura = new Aura(2, true);
         }
         return aura;
     }
 }
-

@@ -1,28 +1,37 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
 /**
  * Liging Entity Follows another with the intention of hitting it
  * */
-class ChaseBehaviour : BaseSocialBehaviour
+
+internal class ChaseBehaviour : BaseSocialBehaviour
 {
     private static IDebugLogger logger = DebugManager.getDebugLogger(typeof(ChaseBehaviour));
 
+    private static float FOLLOW_DISTANCE = 0.3f;
 
-//    float followDistance = 0;
+    private static float CHASE_DISTANCE = 0.2f;
+
+    private static float ANIMATION_TIME = 0.2f;
+
+    //    float followDistance = 0;
     private BaseLivingEntity chased;
+
     public ChaseBehaviour(BehaviourType type, int weight, List<EntityType> triggerEntities)
         : base(type, weight, triggerEntities)
     {
     }
 
+    private Boolean wasMoving = true;
+
     public override void Start()
     {
-        iTween.ColorFrom(LivingEntity.gameObject, Color.black, .3f);
-        if (TargetEntity is BaseLivingEntity) {
+        iTween.ColorUpdate(LivingEntity.gameObject, Color.magenta, .01f);
+
+        if (TargetEntity is BaseLivingEntity)
+        {
             chased = (BaseLivingEntity)TargetEntity;
         }
         if (logger.IsExtreme())
@@ -34,12 +43,33 @@ class ChaseBehaviour : BaseSocialBehaviour
     public override void Update()
     {
         base.Update();
-        iTween.ColorFrom(LivingEntity.gameObject, Color.black, .3f);
-       // iTween.MoveUpdate(LivingEntity.gameObject, new Vector3(chased.transform.position.x, chased.transform.position.y, chased.transform.position.z), .3f);
-        if (logger.IsExtreme())
-        {
-            logger.Log(GetType().FullName + " on " + LivingEntity.GetName() + " update");
-        }
+        iTween.ColorUpdate(LivingEntity.gameObject, Color.magenta, .01f);
+
+        //        if (chased.transform.position.x - LivingEntity.transform.position.x < CHASE_DISTANCE)
+        //        {
+        //            if (!wasMoving)
+        //            {
+        //                iTween.Stop(LivingEntity.gameObject);
+        //            }
+        //            wasMoving = true;
+        //
+        //            logger.Log("Move Update");
+        //            iTween.MoveUpdate(LivingEntity.gameObject, new Vector3(chased.transform.position.x - FOLLOW_DISTANCE, chased.transform.position.y - FOLLOW_DISTANCE, chased.transform.position.z), ANIMATION_TIME * 2);
+        //        }
+        //        else
+        //        {
+        //            if (wasMoving)
+        //            {
+        //                iTween.Stop(LivingEntity.gameObject);
+        //            }
+        //            iTween.Stop(LivingEntity.gameObject);
+        //            logger.Log("Move By");
+        //            iTween.MoveBy(LivingEntity.gameObject, new Vector3(chased.transform.position.x - LivingEntity.transform.position.x, chased.transform.position.y - LivingEntity.transform.position.y, 0), ANIMATION_TIME);
+        //        }
+        //        if (logger.IsExtreme())
+        //        {
+        //            logger.Log(GetType().FullName + " on " + LivingEntity.GetName() + " update");
+        //        }
     }
 
     public override void Stop()

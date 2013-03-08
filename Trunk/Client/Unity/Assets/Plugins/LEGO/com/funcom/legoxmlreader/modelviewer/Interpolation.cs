@@ -37,7 +37,7 @@ using UnityEngine;
  *
  * For convenience in configuration you can use the Ease(EaseType) function to
  * look up a concrete easing function:
- * 
+ *
  *  [SerializeField]
  *  Interpolate.EaseType easeType; // set using Unity's property inspector
  *  Interpolate.Function ease; // easing of a particular EaseType
@@ -53,9 +53,10 @@ namespace com.funcom.legoxmlreader.modelviewer
 {
     public class Interpolate
     {
-     /**
-     * Different methods of easing interpolation.
-     */
+        /**
+        * Different methods of easing interpolation.
+        */
+
         public enum EaseType
         {
             Linear,
@@ -88,24 +89,25 @@ namespace com.funcom.legoxmlreader.modelviewer
         * Note: elapsedTimes are calculated using the value of Time.deltatTime each
         * time a value is requested.
         */
-        static Vector3 Identity(Vector3 v)
+
+        private static Vector3 Identity(Vector3 v)
         {
             return v;
         }
 
-        static Vector3 TransformDotPosition(Transform t)
+        private static Vector3 TransformDotPosition(Transform t)
         {
             return t.position;
         }
 
-
-        static IEnumerable<float> NewTimer(float duration)
+        private static IEnumerable<float> NewTimer(float duration)
         {
             float elapsedTime = 0.0f;
             while (elapsedTime < duration)
             {
                 yield return elapsedTime;
                 elapsedTime += Time.deltaTime;
+
                 // make sure last value is never skipped
                 if (elapsedTime >= duration)
                 {
@@ -115,13 +117,15 @@ namespace com.funcom.legoxmlreader.modelviewer
         }
 
         public delegate Vector3 ToVector3<T>(T v);
+
         public delegate float Function(float a, float b, float c, float d);
 
         /**
          * Generates sequence of integers from start to end (inclusive) one step
          * at a time.
          */
-        static IEnumerable<float> NewCounter(int start, int end, int step)
+
+        private static IEnumerable<float> NewCounter(int start, int end, int step)
         {
             for (int i = start; i <= end; i += step)
             {
@@ -135,6 +139,7 @@ namespace com.funcom.legoxmlreader.modelviewer
          * using the Time.deltaTime to calculate the portion of duration that has
          * elapsed.
          */
+
         public static IEnumerator NewEase(Function ease, Vector3 start, Vector3 end, float duration)
         {
             IEnumerable<float> timer = Interpolate.NewTimer(duration);
@@ -145,19 +150,19 @@ namespace com.funcom.legoxmlreader.modelviewer
          * Instead of easing based on time, generate n interpolated points (slices)
          * between the start and end positions.
          */
+
         public static IEnumerator NewEase(Function ease, Vector3 start, Vector3 end, int slices)
         {
             IEnumerable<float> counter = Interpolate.NewCounter(0, slices + 1, 1);
             return NewEase(ease, start, end, slices + 1, counter);
         }
 
-
-
         /**
          * Generic easing sequence generator used to implement the time and
          * slice variants. Normally you would not use this function directly.
          */
-        static IEnumerator NewEase(Function ease, Vector3 start, Vector3 end, float total, IEnumerable<float> driver)
+
+        private static IEnumerator NewEase(Function ease, Vector3 start, Vector3 end, float total, IEnumerable<float> driver)
         {
             Vector3 distance = end - start;
             foreach (float i in driver)
@@ -170,6 +175,7 @@ namespace com.funcom.legoxmlreader.modelviewer
          * Vector3 interpolation using given easing method. Easing is done independently
          * on all three vector axis.
          */
+
         public static Vector3 Ease(Function ease, Vector3 start, Vector3 distance, float elapsedTime, float duration)
         {
             start.x = ease(start.x, distance.x, elapsedTime, duration);
@@ -187,6 +193,7 @@ namespace com.funcom.legoxmlreader.modelviewer
          * var ease = Interpolate.Ease(EaseType.EaseInQuad);
          * i = ease(start, distance, elapsedTime, duration);
          */
+
         public static Function Ease(EaseType type)
         {
             // Source Flash easing functions:
@@ -239,6 +246,7 @@ namespace com.funcom.legoxmlreader.modelviewer
          * is generated as it is accessed using the Time.deltaTime to calculate the
          * portion of duration that has elapsed.
          */
+
         public static IEnumerable<Vector3> NewBezier(Function ease, Transform[] nodes, float duration)
         {
             IEnumerable<float> timer = Interpolate.NewTimer(duration);
@@ -249,6 +257,7 @@ namespace com.funcom.legoxmlreader.modelviewer
          * Instead of interpolating based on time, generate n interpolated points
          * (slices) between the first and last node.
          */
+
         public static IEnumerable<Vector3> NewBezier(Function ease, Transform[] nodes, int slices)
         {
             IEnumerable<float> counter = NewCounter(0, slices + 1, 1);
@@ -259,6 +268,7 @@ namespace com.funcom.legoxmlreader.modelviewer
          * A Vector3[] variation of the Transform[] NewBezier() function.
          * Same functionality but using Vector3s to define bezier curve.
          */
+
         public static IEnumerable<Vector3> NewBezier(Function ease, Vector3[] points, float duration)
         {
             IEnumerable<float> timer = NewTimer(duration);
@@ -269,6 +279,7 @@ namespace com.funcom.legoxmlreader.modelviewer
          * A Vector3[] variation of the Transform[] NewBezier() function.
          * Same functionality but using Vector3s to define bezier curve.
          */
+
         public static IEnumerable<Vector3> NewBezier(Function ease, Vector3[] points, int slices)
         {
             IEnumerable<float> counter = NewCounter(0, slices + 1, 1);
@@ -279,7 +290,8 @@ namespace com.funcom.legoxmlreader.modelviewer
          * Generic bezier spline sequence generator used to implement the time and
          * slice variants. Normally you would not use this function directly.
          */
-        static IEnumerable<Vector3> NewBezier<T>(Function ease, IList nodes, ToVector3<T> toVector3, float maxStep, IEnumerable<float> steps)
+
+        private static IEnumerable<Vector3> NewBezier<T>(Function ease, IList nodes, ToVector3<T> toVector3, float maxStep, IEnumerable<float> steps)
         {
             // need at least two nodes to spline between
             if (nodes.Count >= 2)
@@ -295,6 +307,7 @@ namespace com.funcom.legoxmlreader.modelviewer
                         points[i] = toVector3((T)nodes[i]);
                     }
                     yield return Bezier(ease, points, step, maxStep);
+
                     // make sure last value is always generated
                 }
             }
@@ -312,6 +325,7 @@ namespace com.funcom.legoxmlreader.modelviewer
          *
          * @param points start point, n control points, end point
          */
+
         public static Vector3 Bezier(Function ease, Vector3[] points, float elapsedTime, float duration)
         {
             // Reference: http://ibiblio.org/e-notes/Splines/Bezier.htm
@@ -339,6 +353,7 @@ namespace com.funcom.legoxmlreader.modelviewer
          * and to the last node. N points are generated between each node (slices)
          * using Catmull-Rom.
          */
+
         public static IEnumerable<Vector3> NewCatmullRom(Transform[] nodes, int slices, bool loop)
         {
             return NewCatmullRom<Transform>(nodes, TransformDotPosition, slices, loop);
@@ -348,6 +363,7 @@ namespace com.funcom.legoxmlreader.modelviewer
          * A Vector3[] variation of the Transform[] NewCatmullRom() function.
          * Same functionality but using Vector3s to define curve.
          */
+
         public static IEnumerable<Vector3> NewCatmullRom(Vector3[] points, int slices, bool loop)
         {
             return NewCatmullRom<Vector3>(points, Identity, slices, loop);
@@ -358,12 +374,12 @@ namespace com.funcom.legoxmlreader.modelviewer
          * Vector3[] and Transform[] variants. Normally you would not use this
          * function directly.
          */
-        static IEnumerable<Vector3> NewCatmullRom<T>(IList nodes, ToVector3<T> toVector3, int slices, bool loop)
+
+        private static IEnumerable<Vector3> NewCatmullRom<T>(IList nodes, ToVector3<T> toVector3, int slices, bool loop)
         {
             // need at least two nodes to spline between
             if (nodes.Count >= 2)
             {
-
                 // yield the first point explicitly, if looping the first point
                 // will be generated again in the step for loop when interpolating
                 // from last point back to the first point
@@ -377,6 +393,7 @@ namespace com.funcom.legoxmlreader.modelviewer
                     {
                         current = 0;
                     }
+
                     // handle edge cases for looping and non-looping scenarios
                     // when looping we wrap around, when not looping use start for previous
                     // and end for next when you at the ends of the nodes array
@@ -414,7 +431,8 @@ namespace com.funcom.legoxmlreader.modelviewer
          * @param next the point just after the end point or the end point itself if no
          *             next point is available
          */
-        static Vector3 CatmullRom(Vector3 previous, Vector3 start, Vector3 end, Vector3 next,
+
+        private static Vector3 CatmullRom(Vector3 previous, Vector3 start, Vector3 end, Vector3 next,
                                     float elapsedTime, float duration)
         {
             // References used:
@@ -442,13 +460,11 @@ namespace com.funcom.legoxmlreader.modelviewer
                                 0.5f * percentCompleteSquared);
         }
 
-
-
-
         /**
          * Linear interpolation (same as Mathf.Lerp)
          */
-        static float Linear(float start, float distance, float elapsedTime, float duration)
+
+        private static float Linear(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime to be <= duration
             if (elapsedTime > duration) { elapsedTime = duration; }
@@ -458,7 +474,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * quadratic easing in - accelerating from zero velocity
          */
-        static float EaseInQuad(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseInQuad(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
             elapsedTime = (elapsedTime > duration) ? 1.0f : elapsedTime / duration;
@@ -468,7 +485,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * quadratic easing out - decelerating to zero velocity
          */
-        static float EaseOutQuad(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseOutQuad(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
             elapsedTime = (elapsedTime > duration) ? 1.0f : elapsedTime / duration;
@@ -478,7 +496,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * quadratic easing in/out - acceleration until halfway, then deceleration
          */
-        static float EaseInOutQuad(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseInOutQuad(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
             elapsedTime = (elapsedTime > duration) ? 2.0f : elapsedTime / (duration / 2);
@@ -490,7 +509,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * cubic easing in - accelerating from zero velocity
          */
-        static float EaseInCubic(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseInCubic(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
             elapsedTime = (elapsedTime > duration) ? 1.0f : elapsedTime / duration;
@@ -500,7 +520,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * cubic easing out - decelerating to zero velocity
          */
-        static float EaseOutCubic(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseOutCubic(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
             elapsedTime = (elapsedTime > duration) ? 1.0f : elapsedTime / duration;
@@ -511,7 +532,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * cubic easing in/out - acceleration until halfway, then deceleration
          */
-        static float EaseInOutCubic(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseInOutCubic(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
             elapsedTime = (elapsedTime > duration) ? 2.0f : elapsedTime / (duration / 2);
@@ -523,7 +545,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * quartic easing in - accelerating from zero velocity
          */
-        static float EaseInQuart(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseInQuart(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
             elapsedTime = (elapsedTime > duration) ? 1.0f : elapsedTime / duration;
@@ -533,7 +556,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * quartic easing out - decelerating to zero velocity
          */
-        static float EaseOutQuart(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseOutQuart(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
             elapsedTime = (elapsedTime > duration) ? 1.0f : elapsedTime / duration;
@@ -544,7 +568,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * quartic easing in/out - acceleration until halfway, then deceleration
          */
-        static float EaseInOutQuart(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseInOutQuart(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
             elapsedTime = (elapsedTime > duration) ? 2.0f : elapsedTime / (duration / 2);
@@ -553,11 +578,11 @@ namespace com.funcom.legoxmlreader.modelviewer
             return -distance / 2 * (elapsedTime * elapsedTime * elapsedTime * elapsedTime - 2) + start;
         }
 
-
         /**
          * quintic easing in - accelerating from zero velocity
          */
-        static float EaseInQuint(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseInQuint(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
             elapsedTime = (elapsedTime > duration) ? 1.0f : elapsedTime / duration;
@@ -567,7 +592,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * quintic easing out - decelerating to zero velocity
          */
-        static float EaseOutQuint(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseOutQuint(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
             elapsedTime = (elapsedTime > duration) ? 1.0f : elapsedTime / duration;
@@ -578,7 +604,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * quintic easing in/out - acceleration until halfway, then deceleration
          */
-        static float EaseInOutQuint(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseInOutQuint(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
             elapsedTime = (elapsedTime > duration) ? 2.0f : elapsedTime / (duration / 2f);
@@ -590,7 +617,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * sinusoidal easing in - accelerating from zero velocity
          */
-        static float EaseInSine(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseInSine(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime to be <= duration
             if (elapsedTime > duration) { elapsedTime = duration; }
@@ -600,7 +628,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * sinusoidal easing out - decelerating to zero velocity
          */
-        static float EaseOutSine(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseOutSine(float start, float distance, float elapsedTime, float duration)
         {
             if (elapsedTime > duration) { elapsedTime = duration; }
             return distance * Mathf.Sin(elapsedTime / duration * (Mathf.PI / 2)) + start;
@@ -609,7 +638,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * sinusoidal easing in/out - accelerating until halfway, then decelerating
          */
-        static float EaseInOutSine(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseInOutSine(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime to be <= duration
             if (elapsedTime > duration) { elapsedTime = duration; }
@@ -619,7 +649,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * exponential easing in - accelerating from zero velocity
          */
-        static float EaseInExpo(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseInExpo(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime to be <= duration
             if (elapsedTime > duration) { elapsedTime = duration; }
@@ -629,7 +660,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * exponential easing out - decelerating to zero velocity
          */
-        static float EaseOutExpo(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseOutExpo(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime to be <= duration
             if (elapsedTime > duration) { elapsedTime = duration; }
@@ -639,6 +671,7 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * exponential easing in/out - accelerating until halfway, then decelerating
          */
+
         public static float EaseInOutExpo(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
@@ -651,7 +684,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * circular easing in - accelerating from zero velocity
          */
-        static float EaseInCirc(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseInCirc(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
             elapsedTime = (elapsedTime > duration) ? 1.0f : elapsedTime / duration;
@@ -661,7 +695,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * circular easing out - decelerating to zero velocity
          */
-        static float EaseOutCirc(float start, float distance, float elapsedTime, float duration)
+
+        private static float EaseOutCirc(float start, float distance, float elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration
             elapsedTime = (elapsedTime > duration) ? 1.0f : elapsedTime / duration;
@@ -672,7 +707,8 @@ namespace com.funcom.legoxmlreader.modelviewer
         /**
          * circular easing in/out - acceleration until halfway, then deceleration
          */
-        static float EaseInOutCirc(float start, float distance, float
+
+        private static float EaseInOutCirc(float start, float distance, float
                              elapsedTime, float duration)
         {
             // clamp elapsedTime so that it cannot be greater than duration

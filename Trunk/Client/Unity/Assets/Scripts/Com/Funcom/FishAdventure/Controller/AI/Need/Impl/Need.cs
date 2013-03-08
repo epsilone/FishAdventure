@@ -1,11 +1,5 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-class Need : INeed
+﻿internal class Need : INeed
 {
-
     public Need(NeedType type, int weight)
     {
         this.type = type;
@@ -18,6 +12,7 @@ class Need : INeed
     {
         set { type = value; }
     }
+
     private int weight;
 
     public int Weight
