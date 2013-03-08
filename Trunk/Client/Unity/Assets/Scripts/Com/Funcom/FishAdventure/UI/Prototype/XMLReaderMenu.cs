@@ -5,7 +5,7 @@ public class XMLReaderMenu:MonoBehaviour
 {
 	private GameObject Fish;
 	
-	private const int NUMBER_OF_BUTTON = 4;
+	private const int NUMBER_OF_BUTTON = 5;
 	
 	void OnGUI()
 	{
@@ -13,7 +13,7 @@ public class XMLReaderMenu:MonoBehaviour
 		
 		if (GUI.Button(new Rect(Screen.width-200,((Screen.height / (NUMBER_OF_BUTTON + 1)) * 1) - 30,200,60),"Mario"))
 		{
-			InvokeFish("hero_fish");
+			InvokeFish("redmariofish");
 		}
 		
 		if (GUI.Button(new Rect(Screen.width-200,((Screen.height / (NUMBER_OF_BUTTON + 1)) * 2) - 30,200,60),"Fish"))
@@ -29,6 +29,11 @@ public class XMLReaderMenu:MonoBehaviour
 		if (GUI.Button(new Rect(Screen.width-200,((Screen.height / (NUMBER_OF_BUTTON + 1)) * 4) - 30,200,60),"Octopod"))
 		{
 			InvokeFish("octopod");
+		}
+		
+		if (GUI.Button(new Rect(Screen.width-200,((Screen.height / (NUMBER_OF_BUTTON + 1)) * 5) - 30,200,60),"Hero Fish"))
+		{
+			InvokeFish("hero_fish");
 		}
 		
 		if (GUI.Button(new Rect(0,Screen.height - 40 , 100, 40),"Main Menu"))
