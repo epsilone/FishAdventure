@@ -124,7 +124,7 @@ namespace PaddleForm
                     var packet = Utils.CreatePacket(player.MessageQueue);
                     player.MessageQueue.Clear();
                     byte[] raw = FrameBuffer.CreateFrame(Utils.Serialize, packet);
-                    Console.WriteLine("Writing {0}, {1}", raw.Length, BitConverter.ToString(raw).Replace("-", string.Empty));
+                    //Console.WriteLine("Writing {0}, {1}", raw.Length, BitConverter.ToString(raw).Replace("-", string.Empty));
                     var stream = player.Client.GetStream();
                     stream.Write(raw, 0, raw.Length);
                 }
@@ -153,7 +153,7 @@ namespace PaddleForm
                 }
                 else
                 {
-                    Player.Buffer.Append(SocketBuffer);
+                    Player.Buffer.Append(SocketBuffer, 0, available);
                     ReadFrames(player.Buffer);
                 }
 
@@ -163,6 +163,9 @@ namespace PaddleForm
 
         private void ReadFrames(FrameBuffer buffer)
         {
+#if DEBUG
+            int frames = 0;
+#endif
             int frameSize = -1;
             do
             {
@@ -170,12 +173,18 @@ namespace PaddleForm
                 frameSize = buffer.ReadFrame(FRAME);
                 if (frameSize > 0)
                 {
-                    Console.WriteLine("Reading, {0}", BitConverter.ToString(FRAME).Replace("-", string.Empty));
+#if DEBUG
+                    frames++;
+#endif
+                    //Console.WriteLine("Reading, {0}", BitConverter.ToString(FRAME).Replace("-", string.Empty));
                     var packet = Utils.Deserialize<PaddlePacket>(FRAME);
                     ProcessPacket(packet);
                 }
             }
             while (frameSize > 0);
+#if DEBUG
+            Console.WriteLine("Processed frames {0} {1}", frames, buffer.QueueSize());
+#endif
         }
 
         private void ProcessPacket(PaddlePacket packet)
@@ -222,12 +231,14 @@ namespace PaddleForm
                         
                         if (gameStart.PlayerId == 1)
                         {
+                            Player.Name = PLAYER_ONE;
                             Game.PlayerOne = Player;
                             Game.PlayerTwo = new Player();
                             Player.Controlled = Game.LeftPaddle;
                         }
                         else
                         {
+                            Player.Name = PLAYER_TWO;
                             Game.PlayerOne = new Player();
                             Game.PlayerTwo = Player;
                             Player.Controlled = Game.RightPaddle;

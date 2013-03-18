@@ -18,12 +18,12 @@ namespace PaddleTransport
 
         private int FrameSize { get; set; }
         
-        private MemoryStream Buffer { get; set; }
+        private CircularBuffer<byte> Buffer { get; set; }
         private int Position { get; set; }
 
         public FrameBuffer()
         {
-            Buffer = new MemoryStream();
+            Buffer = new CircularBuffer<byte>();
             FrameSize = -1;
         }
 
@@ -35,11 +35,11 @@ namespace PaddleTransport
                 UpdateFrameSize();
             }
 
-            if ((FrameSize > 0) && (Buffer.Length >= FrameSize))
+            if ((FrameSize > 0) && (Buffer.Length >= FrameSize - HEADER_SIZE))  // Since we already read the header
             {
                 Debug.Assert(raw.Length > FrameSize, "Buffer is too small please allocate more, frame size: " + FrameSize);
-                read = FrameSize;
-                Buffer.Read(raw, 0, FrameSize);
+                read = FrameSize - HEADER_SIZE;
+                Buffer.Get(raw, 0, read);
                 UpdateFrameSize();
             }
 
@@ -63,9 +63,9 @@ namespace PaddleTransport
             return framed;
         }
 
-        public void Append(byte[] raw)
+        public void Append(byte[] raw, int offset, int length)
         {
-            Buffer.Write(raw, 0, raw.Length);
+            Buffer.Put(raw, offset, length);
         }
 
         private void UpdateFrameSize()
@@ -73,12 +73,19 @@ namespace PaddleTransport
             FrameSize = -1;
             if (Buffer.Length >= HEADER_SIZE)
             {
-                var b1 = Buffer.ReadByte();
-                var b2 = Buffer.ReadByte();
-                var b3 = Buffer.ReadByte();
-                var b4 = Buffer.ReadByte();
+                int b1 = Buffer.Get();
+                int b2 = Buffer.Get();
+                int b3 = Buffer.Get();
+                int b4 = Buffer.Get();
                 FrameSize = ((b1 & 0xff) << 24) | ((b2 & 0xff) << 16) | ((b3 & 0xff) << 8) | ((b4 & 0xff));
             }
         }
+
+#if DEBUG
+        public int QueueSize()
+        {
+            return Buffer.Length;
+        }
+#endif
     }
 }

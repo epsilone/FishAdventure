@@ -160,7 +160,7 @@ namespace PaddleServer.ServerState
                 }
                 else
                 {
-                    player.Buffer.Append(buffer);
+                    player.Buffer.Append(buffer, 0, buffer.Length);
                     ReadFrames(player.Buffer);
                 }
             }
@@ -233,22 +233,6 @@ namespace PaddleServer.ServerState
                 Trace.TraceError("Client is not responding {0}", player);
                 player.Client.Close();
             }
-        }
-
-        private void SerializePlayerOnePacket(Stream stream)
-        {
-            SerializePacket(stream, PlayerOne.MessageQueue);
-        }
-
-        private void SerializePlayerTwoPacket(Stream stream)
-        {
-            SerializePacket(stream, PlayerTwo.MessageQueue);
-        }
-
-        private void SerializePacket(Stream stream, List<KeyValuePair<MessageId, TBase>> queue)
-        {
-            var packet = Utils.CreatePacket(queue);
-            Utils.Serialize(packet, stream);
         }
 
         private EntityPosition createBallPosition()
