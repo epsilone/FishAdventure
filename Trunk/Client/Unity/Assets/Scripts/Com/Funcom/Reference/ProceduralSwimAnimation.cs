@@ -25,6 +25,7 @@ public class ProceduralSwimAnimation:MonoBehaviour
 		foreach(MeshFilter meshfilter in meshList)
 		{
 			Mesh mesh = meshfilter.mesh;
+            if(mesh.name.Contains("decal")) continue;
 			//Mesh mesh = (meshList[0] as MeshFilter).mesh;
 			
 			if (baseHeight == null)
@@ -44,6 +45,7 @@ public class ProceduralSwimAnimation:MonoBehaviour
 		
 		    mesh.vertices = vertices;
 		    mesh.RecalculateNormals();
+            mesh.RecalculateBounds();
 		}
 	}
 }

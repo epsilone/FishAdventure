@@ -19,6 +19,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             assembledRotation = q;
             controlPoints = new Vector3[3];
         }
+
         public Vector3 AssembledPosition
         {
             get
@@ -30,6 +31,7 @@ namespace com.funcom.legoxmlreader.modelviewer
                 assembledPosition = value;
             }
         }
+
         public Quaternion AssembledRotation
         {
             get
@@ -49,6 +51,7 @@ namespace com.funcom.legoxmlreader.modelviewer
                 return explodeTrajectory;
             }
         }
+
         public Vector3[] ImplodeTrajectory
         {
             get
@@ -56,6 +59,7 @@ namespace com.funcom.legoxmlreader.modelviewer
                 return implodeTrajectory;
             }
         }
+
         private int betweenNodeCount = 40;
 
         public void ComputeExplodeTrajectory(Vector3 explodedPosition)
@@ -63,6 +67,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             // here we compute the trajectory from the assembled position out to the common exploded position
             // therefore need to make sure the part is in it's correct assembled position before the calculation
             explodeTrajectory = new Vector3[betweenNodeCount * (controlPoints.Length - 1) + controlPoints.Length];
+
             // calculate the end (exploded) point and the part way along mid point for catmull rom mid point
             // take a position on the direct line from the start position to the end(exploded) position +/- random variation, then
             // rotate a point out along the xz plane - this will be the catmull rom mid point
@@ -94,6 +99,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             // here we compute the trajectory from the common exploded position in to the assembled position
             // therefore need to make sure the part is in it's correct assembled position before the calculation
             implodeTrajectory = new Vector3[betweenNodeCount * (controlPoints.Length - 1) + controlPoints.Length];
+
             // calculate the end (assembled) point and the part way along mid point for catmull rom mid point
             // take a position on the direct line from the start position to the end(assembled) position +/- random variation, then
             // rotate a point out along the xz plane - this will be the catmull rom mid point
@@ -130,4 +136,3 @@ namespace com.funcom.legoxmlreader.modelviewer
         }
     }
 }
-

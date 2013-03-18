@@ -1,6 +1,17 @@
 ﻿<Properties>
   <MonoDevelop.Ide.Workspace ActiveConfiguration="Debug" />
-  <MonoDevelop.Ide.Workbench />
+  <MonoDevelop.Ide.Workbench ActiveDocument="c:\Users\kevenp\Documents\GitHub\LEGO\FishAdventure\Trunk\Client\Unity\Assets\Plugins\LEGO\com\funcom\legoxmlreader\modelviewer\CameraEngine.cs">
+    <Files>
+      <File FileName="c:\Users\kevenp\Documents\GitHub\LEGO\FishAdventure\Trunk\Client\Unity\Assets\Plugins\LEGO\com\funcom\legoxmlreader\modelviewer\CameraEngine.cs" Line="79" Column="10" />
+      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\UI\Prototype\XMLReaderMenu.cs" Line="8" Column="41" />
+      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\Util\GenericUtil.cs" Line="294" Column="56" />
+      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\UI\Prototype\AnimationV2Menu.cs" Line="78" Column="68" />
+      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\UI\Prototype\AnimationMenu.cs" Line="193" Column="4" />
+      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\UI\Prototype\PrototypeMainMenu.cs" Line="23" Column="14" />
+      <File FileName="Assets\Scripts\Com\Funcom\FishAdventure\UI\Prototype\CustomizationMenu.cs" Line="131" Column="26" />
+      <File FileName="Assets\Editor\AutoBuilder.cs" Line="84" Column="72" />
+    </Files>
+  </MonoDevelop.Ide.Workbench>
   <MonoDevelop.Ide.DebuggingService.Breakpoints>
     <BreakpointStore />
   </MonoDevelop.Ide.DebuggingService.Breakpoints>

@@ -1,29 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
-class DebugManager
+internal class DebugManager
 {
     private static Boolean isDebugEnabled = true;
-    static Dictionary<Type, DebugLoggerLevel> levelByClass = new Dictionary<Type, DebugLoggerLevel>();
+    private static Dictionary<Type, DebugLoggerLevel> levelByClass = new Dictionary<Type, DebugLoggerLevel>();
+
     static DebugManager()
     {
-        levelByClass.Add(typeof(BaseLivingEntity), DebugLoggerLevel.EXTREME);
-        levelByClass.Add(typeof(SwimToBehaviour), DebugLoggerLevel.EXTREME);
+        //  levelByClass.Add(typeof(SwinBehaviour), DebugLoggerLevel.EXTREME);
+        //    levelByClass.Add(typeof(SwimToBehaviour), DebugLoggerLevel.EXTREME);
     }
 
     // used for all classed that do not have a specific debug level set
-    static DebugLoggerLevel GLOBAL_LEVEL = DebugLoggerLevel.NORMAL;
-    static DebugManager INSTANCE;
+    private static DebugLoggerLevel GLOBAL_LEVEL = DebugLoggerLevel.NORMAL;
 
+    private static DebugManager INSTANCE;
 
-    static DebugManager getInstance()
+    private static DebugManager getInstance()
     {
         if (INSTANCE == null)
         {
             INSTANCE = new DebugManager();
-
         }
         return INSTANCE;
     }
@@ -46,7 +44,11 @@ class DebugManager
         {
             return new DebugLogger(DebugLoggerLevel.NONE, type);
         }
+    }
 
+    public static Boolean IsDebugEnabled()
+    {
+        return isDebugEnabled;
     }
 
 }

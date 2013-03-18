@@ -31,6 +31,7 @@
 * IMPLIED WARRANTIES OF MERCHANTABILITY AND ALL IMPLIED WARRANTIES OF
 * FITNESS FOR A PARTICULAR PURPOSE.
 * ************************************************************************/
+
 using System.Collections;
 using System.Collections.Generic;
 using System.Diagnostics;
@@ -134,10 +135,11 @@ using UnityEngine;
 /// </summary>
 ///
 #if DEBUG_CONSOLE
+
 public class DebugConsole : MonoBehaviour
 {
-    readonly string VERSION = "3.0";
-    readonly string ENTRYFIELD = "DebugConsoleEntryField";
+    private readonly string VERSION = "3.0";
+    private readonly string ENTRYFIELD = "DebugConsoleEntryField";
 
     /// <summary>
     /// This is the signature for the DebugCommand delegate if you use the command binding.
@@ -165,6 +167,7 @@ public class DebugConsole : MonoBehaviour
     /// Default color of the standard display text.
     /// </summary>
     public Color defaultColor = Message.defaultColor;
+
     public Color warningColor = Message.warningColor;
     public Color errorColor = Message.errorColor;
     public Color systemColor = Message.systemColor;
@@ -187,7 +190,7 @@ public class DebugConsole : MonoBehaviour
     /// reference (which you do in mose cases), use DebugConsole.Instance and the required
     /// GameObject initialization will be done for you.
     /// </summary>
-    static DebugConsole Instance
+    private static DebugConsole Instance
     {
         get
         {
@@ -212,11 +215,12 @@ public class DebugConsole : MonoBehaviour
     /// Key to press to toggle the visibility of the console.
     /// </summary>
     public static KeyCode toggleKey = KeyCode.BackQuote;
-    static DebugConsole _instance;
-    Dictionary<string, DebugCommand> _cmdTable = new Dictionary<string, DebugCommand>();
-    Dictionary<string, WatchVarBase> _watchVarTable = new Dictionary<string, WatchVarBase>();
-    string _inputString = string.Empty;
-    Rect _windowRect;
+
+    private static DebugConsole _instance;
+    private Dictionary<string, DebugCommand> _cmdTable = new Dictionary<string, DebugCommand>();
+    private Dictionary<string, WatchVarBase> _watchVarTable = new Dictionary<string, WatchVarBase>();
+    private string _inputString = string.Empty;
+    private Rect _windowRect;
 #if MOBILE
   Rect _fakeWindowRect;
   Rect _fakeDragRect;
@@ -228,36 +232,41 @@ public class DebugConsole : MonoBehaviour
 #endif
 #endif
 
-    Vector2 _logScrollPos = Vector2.zero;
-    Vector2 _rawLogScrollPos = Vector2.zero;
-    Vector2 _watchVarsScrollPos = Vector2.zero;
-    Vector3 _guiScale = Vector3.one;
-    Matrix4x4 restoreMatrix = Matrix4x4.identity;
-    bool _scaled = false;
-    bool _isOpen;
-    StringBuilder _displayString = new StringBuilder();
-    FPSCounter fps;
-    bool dirty;
+    private Vector2 _logScrollPos = Vector2.zero;
+    private Vector2 _rawLogScrollPos = Vector2.zero;
+    private Vector2 _watchVarsScrollPos = Vector2.zero;
+    private Vector3 _guiScale = Vector3.one;
+    private Matrix4x4 restoreMatrix = Matrix4x4.identity;
+    private bool _scaled = false;
+    private bool _isOpen;
+    private StringBuilder _displayString = new StringBuilder();
+    private FPSCounter fps;
+    private bool dirty;
+
     #region GUI position values
+
     // Make these values public if you want to adjust layout of console window
-    readonly Rect scrollRect = new Rect(10, 20, 280, 362);
-    readonly Rect inputRect = new Rect(10, 388, 228, 24);
-    readonly Rect enterRect = new Rect(240, 388, 50, 24);
-    readonly Rect toolbarRect = new Rect(16, 416, 266, 25);
-    Rect messageLine = new Rect(4, 0, 264, 20);
-    int lineOffset = -4;
-    string[] tabs = new string[] { "Log", "Copy Log", "Watch Vars" };
+    private readonly Rect scrollRect = new Rect(10, 20, 280, 362);
+
+    private readonly Rect inputRect = new Rect(10, 388, 228, 24);
+    private readonly Rect enterRect = new Rect(240, 388, 50, 24);
+    private readonly Rect toolbarRect = new Rect(16, 416, 266, 25);
+    private Rect messageLine = new Rect(4, 0, 264, 20);
+    private int lineOffset = -4;
+    private string[] tabs = new string[] { "Log", "Copy Log", "Watch Vars" };
 
     // Keep these private, their values are generated automatically
-    Rect nameRect;
-    Rect valueRect;
-    Rect innerRect = new Rect(0, 0, 0, 0);
-    int innerHeight = 0;
-    int toolbarIndex = 0;
-    GUIContent guiContent = new GUIContent();
-    GUI.WindowFunction[] windowMethods;
-    GUIStyle labelStyle;
-    #endregion
+    private Rect nameRect;
+
+    private Rect valueRect;
+    private Rect innerRect = new Rect(0, 0, 0, 0);
+    private int innerHeight = 0;
+    private int toolbarIndex = 0;
+    private GUIContent guiContent = new GUIContent();
+    private GUI.WindowFunction[] windowMethods;
+    private GUIStyle labelStyle;
+
+    #endregion GUI position values
 
     /// <summary>
     /// This Enum holds the message types used to easily control the formatting and display of a message.
@@ -275,11 +284,11 @@ public class DebugConsole : MonoBehaviour
     /// <summary>
     /// Represents a single message, with formatting options.
     /// </summary>
-    struct Message
+    private struct Message
     {
-        string text;
-        string formatted;
-        MessageType type;
+        private string text;
+        private string formatted;
+        private MessageType type;
 
         public Color color;
 
@@ -308,29 +317,32 @@ public class DebugConsole : MonoBehaviour
                 case MessageType.ERROR:
                     color = errorColor;
                     break;
+
                 case MessageType.SYSTEM:
                     color = systemColor;
                     break;
+
                 case MessageType.WARNING:
                     color = warningColor;
                     break;
+
                 case MessageType.OUTPUT:
                     color = outputColor;
                     break;
+
                 case MessageType.INPUT:
                     color = inputColor;
                     break;
             }
         }
 
-        public Message(object messageObject, MessageType messageType, Color displayColor) 
+        public Message(object messageObject, MessageType messageType, Color displayColor)
         {
-           this.color = displayColor;
+            this.color = displayColor;
             this.text = messageObject == null ? "<null>" : messageObject.ToString();
 
             this.formatted = string.Empty;
             this.type = messageType;
-       
         }
 
         public static Message Log(object message)
@@ -388,6 +400,7 @@ public class DebugConsole : MonoBehaviour
                 case MessageType.INPUT:
                     formatted = string.Format(">>> {0}", text);
                     break;
+
                 case MessageType.OUTPUT:
                     var lines = text.Trim('\n').Split('\n');
                     var output = new StringBuilder();
@@ -399,15 +412,19 @@ public class DebugConsole : MonoBehaviour
 
                     formatted = output.ToString();
                     break;
+
                 case MessageType.SYSTEM:
                     formatted = string.Format("# {0}", text);
                     break;
+
                 case MessageType.WARNING:
                     formatted = string.Format("* {0}", text);
                     break;
+
                 case MessageType.ERROR:
                     formatted = string.Format("** {0}", text);
                     break;
+
                 default:
                     formatted = text;
                     break;
@@ -417,10 +434,10 @@ public class DebugConsole : MonoBehaviour
         }
     }
 
-    class History
+    private class History
     {
-        List<string> history = new List<string>();
-        int index = 0;
+        private List<string> history = new List<string>();
+        private int index = 0;
 
         public void Add(string item)
         {
@@ -428,7 +445,7 @@ public class DebugConsole : MonoBehaviour
             index = 0;
         }
 
-        string current;
+        private string current;
 
         public string Fetch(string current, bool next)
         {
@@ -456,10 +473,10 @@ public class DebugConsole : MonoBehaviour
         }
     }
 
-    List<Message> _messages = new List<Message>();
-    History _history = new History();
+    private List<Message> _messages = new List<Message>();
+    private History _history = new History();
 
-    void Awake()
+    private void Awake()
     {
         if (_instance != null && _instance != this)
         {
@@ -470,7 +487,7 @@ public class DebugConsole : MonoBehaviour
         _instance = this;
     }
 
-    void OnEnable()
+    private void OnEnable()
     {
         var scale = Screen.dpi / 160.0f;
 
@@ -518,7 +535,7 @@ public class DebugConsole : MonoBehaviour
     [Conditional("DEBUG_CONSOLE"),
      Conditional("UNITY_EDITOR"),
      Conditional("DEVELOPMENT_BUILD")]
-    void OnGUI()
+    private void OnGUI()
     {
         var evt = Event.current;
 
@@ -534,6 +551,7 @@ public class DebugConsole : MonoBehaviour
             _messages.RemoveAt(0);
         }
 #if (!MOBILE && DEBUG) || UNITY_EDITOR
+
         // Toggle key shows the console in non-iOS dev builds
         if (evt.keyCode == toggleKey && evt.type == EventType.KeyUp)
             _isOpen = !_isOpen;
@@ -542,6 +560,7 @@ public class DebugConsole : MonoBehaviour
     if (Input.touchCount == 1) {
       var touch = Input.GetTouch(0);
 #if DEBUG
+
       // Triple Tap shows/hides the console in iOS/Android dev builds.
       if (evt.type == EventType.Repaint && (touch.phase == TouchPhase.Canceled || touch.phase == TouchPhase.Ended) && touch.tapCount == 3) {
         _isOpen = !_isOpen;
@@ -595,9 +614,11 @@ public class DebugConsole : MonoBehaviour
             case 0:
               _logScrollPos.y -= scrollY;
               break;
+
             case 1:
               _rawLogScrollPos.y -= scrollY;
               break;
+
             case 2:
               _watchVarsScrollPos.y -= scrollY;
               break;
@@ -682,10 +703,11 @@ public class DebugConsole : MonoBehaviour
         }
     }
 
-    void OnDestroy()
+    private void OnDestroy()
     {
         StopAllCoroutines();
     }
+
     #region StaticAccessors
 
     /// <summary>
@@ -840,25 +862,27 @@ public class DebugConsole : MonoBehaviour
     {
         DebugConsole.Instance.RemoveWatchVarFromTable(name);
     }
-    #endregion
+
+    #endregion StaticAccessors
+
     #region Console commands
 
     //==== Built-in example DebugCommand handlers ====
-    object CMDClose(params string[] args)
+    private object CMDClose(params string[] args)
     {
         _isOpen = false;
 
         return "closed";
     }
 
-    object CMDClear(params string[] args)
+    private object CMDClear(params string[] args)
     {
         this.ClearLog();
 
         return "clear";
     }
 
-    object CMDHelp(params string[] args)
+    private object CMDHelp(params string[] args)
     {
         var output = new StringBuilder();
 
@@ -874,7 +898,7 @@ public class DebugConsole : MonoBehaviour
         return output.ToString();
     }
 
-    object CMDSystemInfo(params string[] args)
+    private object CMDSystemInfo(params string[] args)
     {
         var info = new StringBuilder();
 
@@ -920,11 +944,11 @@ public class DebugConsole : MonoBehaviour
         return info.ToString();
     }
 
+    #endregion Console commands
 
-    #endregion
     #region GUI Window Methods
 
-    void DrawBottomControls()
+    private void DrawBottomControls()
     {
         GUI.SetNextControlName(ENTRYFIELD);
         _inputString = GUI.TextField(inputRect, _inputString);
@@ -946,7 +970,7 @@ public class DebugConsole : MonoBehaviour
 #endif
     }
 
-    void LogWindow(int windowID)
+    private void LogWindow(int windowID)
     {
         GUI.Box(scrollRect, string.Empty);
 
@@ -982,7 +1006,7 @@ public class DebugConsole : MonoBehaviour
         DrawBottomControls();
     }
 
-    string GetDisplayString()
+    private string GetDisplayString()
     {
         if (_messages == null)
         {
@@ -992,7 +1016,7 @@ public class DebugConsole : MonoBehaviour
         return _displayString.ToString();
     }
 
-    void BuildDisplayString()
+    private void BuildDisplayString()
     {
         _displayString.Length = 0;
 
@@ -1002,9 +1026,8 @@ public class DebugConsole : MonoBehaviour
         }
     }
 
-    void CopyLogWindow(int windowID)
+    private void CopyLogWindow(int windowID)
     {
-
         guiContent.text = GetDisplayString();
 
         var calcHeight = GUI.skin.textArea.CalcHeight(guiContent, messageLine.width);
@@ -1020,7 +1043,7 @@ public class DebugConsole : MonoBehaviour
         DrawBottomControls();
     }
 
-    void WatchVarWindow(int windowID)
+    private void WatchVarWindow(int windowID)
     {
         GUI.Box(scrollRect, string.Empty);
 
@@ -1089,25 +1112,28 @@ public class DebugConsole : MonoBehaviour
 
         DrawBottomControls();
     }
-    #endregion
+
+    #endregion GUI Window Methods
+
     #region InternalFunctionality
+
     [Conditional("DEBUG_CONSOLE"),
      Conditional("UNITY_EDITOR"),
      Conditional("DEVELOPMENT_BUILD")]
-    void LogMessage(Message msg)
+    private void LogMessage(Message msg)
     {
         _messages.Add(msg);
         dirty = true;
     }
 
     //--- Local version. Use the static version above instead.
-    void ClearLog()
+    private void ClearLog()
     {
         _messages.Clear();
     }
 
     //--- Local version. Use the static version above instead.
-    void RegisterCommandCallback(string commandString, DebugCommand commandCallback)
+    private void RegisterCommandCallback(string commandString, DebugCommand commandCallback)
     {
 #if !UNITY_FLASH
         _cmdTable[commandString.ToLower()] = new DebugCommand(commandCallback);
@@ -1115,24 +1141,24 @@ public class DebugConsole : MonoBehaviour
     }
 
     //--- Local version. Use the static version above instead.
-    void UnRegisterCommandCallback(string commandString)
+    private void UnRegisterCommandCallback(string commandString)
     {
         _cmdTable.Remove(commandString.ToLower());
     }
 
     //--- Local version. Use the static version above instead.
-    void AddWatchVarToTable(WatchVarBase watchVar)
+    private void AddWatchVarToTable(WatchVarBase watchVar)
     {
         _watchVarTable[watchVar.Name] = watchVar;
     }
 
     //--- Local version. Use the static version above instead.
-    void RemoveWatchVarFromTable(string name)
+    private void RemoveWatchVarFromTable(string name)
     {
         _watchVarTable.Remove(name);
     }
 
-    void EvalInputString(string inputString)
+    private void EvalInputString(string inputString)
     {
         inputString = inputString.Trim();
 
@@ -1162,8 +1188,10 @@ public class DebugConsole : MonoBehaviour
             LogMessage(Message.Output(string.Format("*** Unknown Command: {0} ***", cmd)));
         }
     }
-    #endregion
+
+    #endregion InternalFunctionality
 }
+
 #else
 public static class DebugConsole {
   public static bool IsOpen;
@@ -1214,6 +1242,7 @@ public static class DebugConsole {
   }
 }
 #endif
+
 /// <summary>
 /// Base class for WatchVars. Provides base functionality.
 /// </summary>
@@ -1278,13 +1307,11 @@ public class WatchVar<T> : WatchVarBase
     public WatchVar(string name)
         : base(name)
     {
-
     }
 
     public WatchVar(string name, T val)
         : base(name, val)
     {
-
     }
 }
 
@@ -1292,13 +1319,17 @@ public class FPSCounter
 {
     public float current = 0.0f;
     public float updateInterval = 0.5f;
+
     // FPS accumulated over the interval
-    float accum = 0;
+    private float accum = 0;
+
     // Frames drawn over the interval
-    int frames = 1;
+    private int frames = 1;
+
     // Left time for current interval
-    float timeleft;
-    float delta;
+    private float timeleft;
+
+    private float delta;
 
     public FPSCounter()
     {

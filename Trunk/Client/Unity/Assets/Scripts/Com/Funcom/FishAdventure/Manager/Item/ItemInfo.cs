@@ -1,12 +1,7 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-
-class ItemInfo
+﻿internal class ItemInfo
 {
-    ItemType type;
-    int weight;
+    private ItemType type;
+    private int weight;
 
     public ItemInfo(ItemType type, int weight)
     {

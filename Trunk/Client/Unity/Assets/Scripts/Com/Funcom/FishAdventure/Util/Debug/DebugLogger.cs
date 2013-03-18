@@ -1,13 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 using UnityEngine;
 
-
-class DebugLogger : IDebugLogger
+internal class DebugLogger : IDebugLogger
 {
-
     private DebugLoggerLevel level;
     private Type loggedType;
 
@@ -27,28 +22,29 @@ class DebugLogger : IDebugLogger
         if (isEnabled())
         {
             String message = loggedType.Name + " :: " + text;
-        
+
             if (e != null)
             {
                 message += "  \n  " + StackTraceUtility.ExtractStringFromException(e);
             }
-            
+
             switch (severity)
             {
                 case Severity.ERROR:
                     Debug.LogError(text);
                     DebugConsole.LogError(text);
                     break;
+
                 case Severity.WARN:
                     Debug.LogWarning(text);
                     DebugConsole.LogWarning(text);
                     break;
+
                 default:
                     Debug.Log(text);
                     DebugConsole.Log(text);
                     break;
             }
-
         }
     }
 
@@ -82,12 +78,10 @@ class DebugLogger : IDebugLogger
         Log(text, Severity.ERROR, e);
     }
 
-
     private Boolean isEnabled()
     {
         return !DebugLoggerLevel.NONE.Equals(level);
     }
-
 
     public bool IsExtreme()
     {

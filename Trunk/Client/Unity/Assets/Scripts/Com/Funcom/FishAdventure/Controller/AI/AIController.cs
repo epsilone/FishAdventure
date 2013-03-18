@@ -1,20 +1,27 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
 using UnityEngine;
-using System.Threading;
 
-class AIController
+internal class AIController
 {
     private static IDebugLogger logger = DebugManager.getDebugLogger(typeof(AIController));
+
     // changes of value at runtime are not reflected, we need to restart for changes to take effect
-    public static float NEED_REPEAT_RATE = 2f;
-    public static float BEHAVIOUR_REPEAT_RATE = 1f;
+    public static float NEED_REPEAT_RATE = 10f;
+
+    public static float BEHAVIOUR_REPEAT_RATE = 2f;
     private System.Random random;
 
     private BaseLivingEntity controlledEntity;
     private Dictionary<EntityType, List<IEntity>> neighboursByType;
+    private Boolean isEnabled = true;
+
+    public Boolean IsEnabled
+    {
+        get { return isEnabled; }
+        set { isEnabled = value; }
+    }
 
     private static System.Object mutex = new System.Object();
 
@@ -22,7 +29,7 @@ class AIController
     {
         this.controlledEntity = controlledEntity;
         neighboursByType = new Dictionary<EntityType, List<IEntity>>();
-        random = new System.Random(controlledEntity.GetHashCode());
+        random = new System.Random(controlledEntity.GetId());
     }
 
     public void Start()
@@ -31,39 +38,30 @@ class AIController
         this.controlledEntity.InvokeRepeating("generateBehaviour", 0, BEHAVIOUR_REPEAT_RATE);
     }
 
+    public void Update()
+    {
+
+    }
+
     public void GenerateNeed()
     {
-        Need newNeed = GetRandomNeed();
-        controlledEntity.SetCurrentNeed(newNeed);
+        if (isEnabled)
+        {
+            Need newNeed = GetRandomNeed();
+            controlledEntity.SetCurrentNeed(newNeed);
+        }
     }
 
     public void GenerateBehaviour()
     {
-        IBehaviour newBehaviour = GetRandomBehaviour();
-        bool isContinuingPrevBehaviour = false;
-        if (controlledEntity.CurrentBehaviour != null)
+        if (isEnabled)
         {
-            if (controlledEntity.CurrentBehaviour.Equals(newBehaviour))
-            {
-                isContinuingPrevBehaviour = true;
-            }
-            else
-            {
-                controlledEntity.CurrentBehaviour.Stop();
-            }
-        }
-        controlledEntity.SetCurrentBehaviour(newBehaviour);
-        if (!isContinuingPrevBehaviour)
-        {
-
-            controlledEntity.CurrentBehaviour.Start();
+            IBehaviour newBehaviour = GetRandomBehaviour();
+            AssignBehaviour(newBehaviour);
         }
     }
 
-
-
-
-    Need GetRandomNeed()
+    private Need GetRandomNeed()
     {
         // recalculting the weight, find a better way !
         int intentionsWeight = 0;
@@ -76,24 +74,22 @@ class AIController
         int curWeight = 0;
         for (int i = 0; i < controlledEntity.SupportedNeeds.Count; i++)
         {
-
             if ((curWeight + controlledEntity.SupportedNeeds[i].GetWeight()) >= randomOffset)
             {
                 return controlledEntity.SupportedNeeds[i];
             }
             curWeight += controlledEntity.SupportedNeeds[i].GetWeight();
         }
+
         // should never get here !
         throw new System.InvalidOperationException();
     }
 
-
-
-    IBehaviour GetRandomBehaviour()
+    private IBehaviour GetRandomBehaviour()
     {
+        Debug.Log("New behaviour generation for " + controlledEntity.GetName());
         lock (mutex)
         {
-    
             //     Debug.Log("Generating random behaviour");
             IBehaviour returnValue = null;
             int behaviourWeight = 0;
@@ -102,7 +98,6 @@ class AIController
             {
                 if (!(def is ISocialBehaviour))
                 {
-
                     behaviourWeight += def.GetWeight();
                 }
                 else
@@ -115,7 +110,6 @@ class AIController
                         {
                             if (neighboursByType[type].Count > 0)
                             {
-
                                 triggered = true;
                             }
                         }
@@ -129,14 +123,13 @@ class AIController
                         nonTriggered.Add(def);
                     }
                 }
-
             }
+
             // double the weight of the current behaviour
             if (controlledEntity.CurrentBehaviour != null && !nonTriggered.Contains(controlledEntity.CurrentBehaviour))
             {
                 behaviourWeight += controlledEntity.CurrentBehaviour.GetWeight();
             }
-
 
             int randomOffset = random.Next(0, behaviourWeight);
 
@@ -145,7 +138,6 @@ class AIController
             {
                 if (!nonTriggered.Contains(controlledEntity.SupportedBehaviours[i]))
                 {
-
                     int elWeight = controlledEntity.SupportedBehaviours[i].GetWeight();
                     if (controlledEntity.CurrentBehaviour != null && !nonTriggered.Contains(controlledEntity.CurrentBehaviour) && controlledEntity.CurrentBehaviour.Equals(controlledEntity.SupportedBehaviours[i]))
                     {
@@ -153,7 +145,6 @@ class AIController
                     }
                     if ((curWeight + elWeight) >= randomOffset)
                     {
-                       
                         returnValue = controlledEntity.SupportedBehaviours[i];
                         break;
                     }
@@ -163,31 +154,14 @@ class AIController
                 {
                     logger.Log("Entity " + controlledEntity.GetId() + " Random offset " + randomOffset + " full weight " + behaviourWeight);
                 }
-                
-
             }
-       
+
             if (returnValue != null)
             {
-
                 if (returnValue is ISocialBehaviour)
                 {
-                    // generate a target for the social behaviour
-                    ISocialBehaviour socialReturnVal = (ISocialBehaviour)returnValue;
-                    List<IEntity> potentialTriggerEntities = new List<IEntity>();
-                    List<EntityType> triggeringTypes = ((ISocialBehaviour)returnValue).getTriggeringTypes();
-                    foreach (EntityType type in triggeringTypes)
-                    {
-                        if (neighboursByType.ContainsKey(type))
-                        {
-                            potentialTriggerEntities.AddRange(neighboursByType[type]);
-                        }
-                    }
-
-                    //      Debug.Log("potential triggers " + potentialTriggerEntities.Count);
-                    int randomTarget = random.Next(0, potentialTriggerEntities.Count);
-                    IEntity triggerEntity = potentialTriggerEntities[randomTarget];
-                    socialReturnVal.SetTargetEntity(triggerEntity);
+                    Debug.Log("Asiging " + returnValue);
+                    AssignTargetEntity((ISocialBehaviour)returnValue);
                 }
                 return returnValue;
             }
@@ -222,9 +196,7 @@ class AIController
             };
             neighbouringEntities.Add(entity);
             neighboursByType[entity.GetEntityType()] = neighbouringEntities;
-
         }
-
     }
 
     internal void RemoveNeighbour(IEntity gameObject)
@@ -251,9 +223,87 @@ class AIController
             neighbouringEntities.Remove(entity);
             neighboursByType[entity.GetEntityType()] = neighbouringEntities;
         }
-
     }
 
+    public void setEnabled(Boolean enabled)
+    {
+        this.isEnabled = enabled;
+    }
 
+    private void AssignBehaviour(IBehaviour newBehaviour)
+    {
+        bool isContinuingPrevBehaviour = false;
+        if (controlledEntity.CurrentBehaviour != null)
+        {
+            if (controlledEntity.CurrentBehaviour.Equals(newBehaviour))
+            {
+                isContinuingPrevBehaviour = true;
+            }
+            else
+            {
+                controlledEntity.CurrentBehaviour.Stop();
+            }
+        }
 
+        if (!isContinuingPrevBehaviour)
+        {
+            newBehaviour.Start();
+        }
+        controlledEntity.SetCurrentBehaviour(newBehaviour);
+    }
+
+    // used for debug
+    public void AssignBehaviour(BehaviourType type)
+    {
+        lock (mutex)
+        {
+            foreach (IBehaviour def in controlledEntity.SupportedBehaviours)
+            {
+                if (def.GetBehaviourType().Equals(type))
+                {
+                    logger.LogWarning("Assiging");
+                    if (def is ISocialBehaviour)
+                    {
+                        logger.LogWarning("isSocial");
+                        if (!AssignTargetEntity((ISocialBehaviour)def))
+                        {
+                            logger.LogWarning("Could not assign target entity, falling back to swim");
+                            AssignBehaviour(BehaviourType.SWIM);
+                            break;
+                        }
+                        else
+                        {
+                            logger.LogWarning("isSocial assigned entity");
+                        }
+                    }
+                    AssignBehaviour(def);
+                }
+            }
+        }
+    }
+
+    private Boolean AssignTargetEntity(ISocialBehaviour socialBehaviour)
+    {
+        // generate a target for the social behaviour
+
+        List<IEntity> potentialTriggerEntities = new List<IEntity>();
+        List<EntityType> triggeringTypes = socialBehaviour.getTriggeringTypes();
+        foreach (EntityType type in triggeringTypes)
+        {
+            if (neighboursByType.ContainsKey(type))
+            {
+                potentialTriggerEntities.AddRange(neighboursByType[type]);
+            }
+        }
+
+        if (potentialTriggerEntities.Count > 0)
+        {
+            Debug.Log("potential triggers " + potentialTriggerEntities.Count);
+            int randomTarget = random.Next(0, potentialTriggerEntities.Count);
+            IEntity triggerEntity = potentialTriggerEntities[randomTarget];
+            socialBehaviour.SetTargetEntity(triggerEntity);
+            return true;
+        }
+        return false;
+    }
 }

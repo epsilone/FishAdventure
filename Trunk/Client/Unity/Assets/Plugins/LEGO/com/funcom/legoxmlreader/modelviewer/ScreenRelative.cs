@@ -8,10 +8,10 @@ namespace com.funcom.legoxmlreader.modelviewer
         {
             return new Rect(Screen.width * x, Screen.height * y, Screen.width * w, Screen.height * h);
         }
+
         public static Rect rect(Rect r)
         {
             return new Rect(Screen.width * r.x, Screen.height * r.y, Screen.width * r.width, Screen.height * r.height);
         }
     }
 }
-

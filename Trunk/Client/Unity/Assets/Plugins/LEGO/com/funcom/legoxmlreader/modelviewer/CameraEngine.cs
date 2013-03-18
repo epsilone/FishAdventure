@@ -1,13 +1,14 @@
-using UnityEngine;
-using System.Collections;
 using System;
+using System.Collections;
+using UnityEngine;
 
 namespace com.funcom.legoxmlreader.modelviewer
 {
-    public class CameraEngine:MonoBehaviour
+    public class CameraEngine : MonoBehaviour
     {
-        //TESTING	
+        //TESTING
         public Interpolate.EaseType easeType; // set using Unity's property inspector
+
         private Interpolate.Function ease; // easing of a particular EaseType
         public float[] bTimes = new float[20];
 
@@ -64,7 +65,7 @@ namespace com.funcom.legoxmlreader.modelviewer
         private float degreesPerScreenWidth = 360.0f;  // screen territory in percentage per degree movement
         private float degreesPerScreenHeight = 180.0f;
 
-        void Start()
+        private void Start()
         {
             ease = Interpolate.Ease(easeType);
             SetObliqueness();
@@ -77,7 +78,6 @@ namespace com.funcom.legoxmlreader.modelviewer
             mat[1, 2] = verticalObliqueness;
             mainCamera.projectionMatrix = mat;
         }
-
 
         public float CurrentAngle
         {
@@ -114,10 +114,8 @@ namespace com.funcom.legoxmlreader.modelviewer
                         if (duration == 0)
                         {
                             Debug.Log("duration = 0");
-
                         }
                         mainCamera.transform.position = Vector3.Slerp(startPosition, viewingPosition, clampedTime / duration);
-
                     }
                     catch (Exception e)
                     {
@@ -135,7 +133,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             // If you don't want to use acos, you can just use the absolute dot product itself (which is close to one for small angles)."
 
             Vector3 cp = Vector3.forward;			// unit vector down the z
-            Quaternion q = Quaternion.Euler(-angleXY, // rotation around the x axis 
+            Quaternion q = Quaternion.Euler(-angleXY, // rotation around the x axis
                                             angleXZ, // rotation around the Y
                                             0.0f);   //rotation around the Z -  order is rotate z,x,y
             cp = q * cp;					// rotate the unit vector in the appropriate direction
@@ -143,7 +141,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             cp = cp + pFocusPoint;
 
             //		Vector2 angleVector = new Vector2(Mathf.Cos(angleXY * Mathf.Deg2Rad)*newDistance, Mathf.Sin(angleXY * Mathf.Deg2Rad)*newDistance);
-            //		Vector3 cp = new Vector3(Mathf.Sin(angleXZ*Mathf.Deg2Rad)*angleVector.x, angleVector.y, Mathf.Cos(angleXZ*Mathf.Deg2Rad)*angleVector.x) + pFocusPoint;	
+            //		Vector3 cp = new Vector3(Mathf.Sin(angleXZ*Mathf.Deg2Rad)*angleVector.x, angleVector.y, Mathf.Cos(angleXZ*Mathf.Deg2Rad)*angleVector.x) + pFocusPoint;
             return cp;
         }
 
@@ -184,7 +182,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             cameraLerp = true;
             changed = true;
 
-            while (!ApproximatePositions(mainCamera.transform.position, viewingPosition))
+            while (!ApproximatePositions(mainCamera.transform.position, viewingPosition,0.01f))
             {
                 mainCamera.transform.position = Vector3.Slerp(mainCamera.transform.position, viewingPosition, Time.deltaTime * 3);
                 mainCamera.transform.LookAt(focusPoint);
@@ -193,7 +191,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             cameraLerp = false;
         }
 
-        private bool ApproximatePositions(Vector3 vectorOne, Vector3 vectorTwo, float percentageDifferenceAllowed = 0.01f)
+        private bool ApproximatePositions(Vector3 vectorOne, Vector3 vectorTwo, float percentageDifferenceAllowed)
         {
             return (vectorOne - vectorTwo).sqrMagnitude <= (vectorOne * percentageDifferenceAllowed).sqrMagnitude;
         }
@@ -205,7 +203,7 @@ namespace com.funcom.legoxmlreader.modelviewer
             return (biggestSide * 0.5f) / Mathf.Tan((mainCamera.fieldOfView * Mathf.Deg2Rad) * 0.5f);
         }
 
-        void OnGUI()
+        private void OnGUI()
         {
             bool buttonActioned = false;
 
@@ -319,12 +317,13 @@ namespace com.funcom.legoxmlreader.modelviewer
                 angleXZ %= 360;
                 angleXY %= 360;
                 angleXY = Mathf.Clamp(angleXY, -89.9f, 89.9f);
+
                 //if(angleXY > 89.9f)  { angleXY =  89.9f; }
                 //if(angleXY < -89.9f) { angleXY = -89.9f; }
             }
         }
 
-        void LateUpdate()
+        private void LateUpdate()
         {
             distance = Mathf.Clamp(distance - Input.GetAxis("Mouse ScrollWheel") * 30, minDistance, minDistance * 3);
         }

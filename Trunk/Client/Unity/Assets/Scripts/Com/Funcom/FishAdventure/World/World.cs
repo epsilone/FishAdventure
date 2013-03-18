@@ -1,20 +1,15 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using UnityEngine;
+﻿using UnityEngine;
 
 public class World
 {
-    static float segmentLength = 25;
-    static float MinX = -segmentLength;
-    static float MinY = -segmentLength;
-    static float MinZ = -segmentLength;
+    private static float segmentLength = 10;
+    private static float MinX = -segmentLength;
+    private static float MinY = -segmentLength;
+    private static float MinZ = -segmentLength;
 
-    static float MaxX = segmentLength;
-    static float MaxY = segmentLength;
-    static float MaxZ = segmentLength;
-
+    private static float MaxX = segmentLength;
+    private static float MaxY = segmentLength;
+    private static float MaxZ = segmentLength;
 
     public static float GetMinX()
     {
@@ -46,10 +41,8 @@ public class World
         return MaxZ;
     }
 
-
     public void Start()
     {
-
     }
 
     public static bool IsWithinBounds(Vector3 point)
